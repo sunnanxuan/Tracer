@@ -1,0 +1,19 @@
+.account {
+    margin-left: auto;
+    margin-right: auto;
+    width: 440px;
+    border-radius: 10px; /* 圆角半径，10px 可以根据需要调整 */
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3); /* 右下侧阴影 */
+    padding: 30px;
+    font-size: 18px;
+}
+.account .title{
+    text-align: center;  /* 使标题居中 */
+    font-weight: bold;   /* 使字体加粗 */
+    font-size: 28px;
+    padding-bottom: 10px;
+}
+
+.col-md-5 .btn{
+    float: right;
+}

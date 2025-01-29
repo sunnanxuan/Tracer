@@ -1,0 +1,89 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}用户登录{% endblock %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        .error-msg {
+            color: red;
+            font-size: 12px;
+            position: absolute;
+
+            .row {
+                display: flex;
+                align-items: center;
+            }
+
+            .col-xs-5 {
+                flex: 0 0 auto; /* 保持按钮大小 */
+            }
+
+            .col-xs-7 {
+                flex: 1; /* 占据剩余空间 */
+                display: flex;
+                justify-content: flex-end; /* 右对齐内容 */
+                align-items: center;
+            }
+
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="account">
+            <div class="title">用户登录</div>
+            <form id="smsForm" method="POST" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.name == 'code' %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <div class="row clearfix">
+                                <div class="col-md-7">
+                                    {{ field }}
+                                    <span class="error-msg">{{ field.errors.0 }}</span>
+                                </div>
+                                <div class="col-md-5">
+                                    <img id="imageCode" src="/image/code/" alt="验证码">
+                                    <div style="font-size: 12px; color: #2b669a">看不清？点击图片换一张</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <span class="error-msg">{{ field.errors.0 }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <div class="row clearfix">
+                    <div class="col-md-7">
+                       <button id='btnSubmit' type="submit" class="btn btn-primary">登 录</button>
+                    </div>
+                    <div class="col-md-5" style="font-size: 14px">
+                        <div><a href="{% url 'login_sms' %}">短信登录</a></div>
+                        <div><a href="{% url 'register' %}">没有账号？点击注册</a></div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            $('#imageCode').click(function () {
+                var oldSrc = $(this).attr('src');
+                $(this).attr('src', oldSrc + "?");
+            })
+        })
+    </script>
+{% endblock %}

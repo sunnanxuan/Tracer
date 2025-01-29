@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "web.apps.WebConfig"
 ]
 
 MIDDLEWARE = [
@@ -47,6 +48,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "web.middleware.auth.AuthMiddleware",
 ]
 
 ROOT_URLCONF = "Tracer.urls"
@@ -54,7 +56,7 @@ ROOT_URLCONF = "Tracer.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
+        "DIRS": [BASE_DIR / 'web/templates']
         ,
         "APP_DIRS": True,
         "OPTIONS": {
@@ -129,6 +131,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 ACCOUNT_SID = '#'
 AUTH_TOKEN = '#'
 TWILIO_NUMBER = '#'
+
+
+
+
+WHITE_REGEX_URL_LIST = [
+    "/register/",
+    "/login/",
+    "/login/sms/",
+    "/send/sms/",
+    "/image/code/",
+    "/index/",
+]
+
+
+
+
 
 
 
