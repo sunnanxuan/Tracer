@@ -26,7 +26,7 @@ class AuthMiddleware(MiddlewareMixin):
         request.tracer.user=user_object
 
 
-        if request.path_info in settings.WHITE_REGEX_URL_LIST:
+        if request.path_info in settings.WHITE_REGEX_URL_LIST or request.path_info.startswith('/admin/'):
             return
         if not request.tracer.user:
             return redirect('login')
