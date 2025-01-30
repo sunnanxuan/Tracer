@@ -46,7 +46,7 @@ class Transaction(models.Model):
     price=models.IntegerField(verbose_name='实际支付价格')
     start_datetime=models.DateTimeField(verbose_name='开始时间', null=True, blank=True)
     end_datetime=models.DateTimeField(verbose_name='结束时间', null=True, blank=True)
-    create_datetime = models.DateTimeField(verbose_name='创建实际', auto_now_add=True)
+    create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 
 
 
@@ -77,4 +77,4 @@ class ProjectUser(models.Model):
     user=models.ForeignKey(verbose_name='用户', to='UserInfo', related_name='projects', on_delete=models.CASCADE)
     project=models.ForeignKey(verbose_name='项目', to='Project',on_delete=models.CASCADE)
     star=models.BooleanField(verbose_name='星标', default=False)
-    create_datetime = models.DateTimeField(verbose_name='加入实际', auto_now_add=True)
+    create_datetime = models.DateTimeField(verbose_name='加入时间', auto_now_add=True)
