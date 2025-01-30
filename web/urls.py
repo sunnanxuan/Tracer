@@ -15,5 +15,5 @@ urlpatterns = [
     path("index/", index.index, name='index'),
 
     path("project/list/", project.project_list, name='project_list'),
-
+    path("project/star/<str:project_type>/<int:project_id>/", project.project_star, name='project_star'),
 ]

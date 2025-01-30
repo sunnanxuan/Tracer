@@ -3,14 +3,13 @@
 
 {% block title %}项目{% endblock %}
 
-
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/manage.css' %}">
     <style>
         .project {
             margin-top: 10px;
         }
-        .panel-body{
+        .panel-body {
             padding: 0;
             display: flex;
             flex-direction: row;
@@ -18,8 +17,37 @@
             align-items: flex-start;
             flex-wrap: wrap;
         }
+        .item {
+            width: 200px;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .item .title {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .item .info {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .item .info a {
+            color: #d5d5d5;
+            text-decoration: none;
+        }
+        .item .info a:hover {
+            color: #ffd700;
+        }
     </style>
-
 {% endblock %}
 
 {% block content %}
@@ -28,80 +56,78 @@
         <i class="fa fa-plus-circle" aria-hidden="true"></i>新建项目
     </a>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">星标</h3>
-  </div>
-  <div class="panel-body">
-    {% for item in project_dict.star %}
-        <div class="item">
-        <a href="#" class="title" style="background-color: {{ item.get_color_display }};">{{ item.name }}</a>
-        <div class="info">
-            <div>
-                <a href="#">
-                    <i class="fa fa-star" aria-hidden="true" style=""></i>
-                </a>
-            </div>
-            <div>
-                <i class="fa fa-user-o" aria-hidden="true"></i>
-                <span>{{ item.join_count }}</span>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">星标</h3>
         </div>
+        <div class="panel-body">
+            {% for item in project_dict.star %}
+                <div class="item">
+                    <a href="#" class="title" style="background-color: {{ item.get_color_display }};">{{ item.name }}</a>
+                    <div class="info">
+                        <div>
+                            <a href="#">
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <i class="fa fa-user-o" aria-hidden="true"></i>
+                            <span>{{ item.join_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-      {% endfor %}
-  </div>
-</div>
+    </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">我创建的</h3>
-  </div>
-  <div class="panel-body">
-    {% for item in project_dict.my %}
-        <div class="item">
-        <a href="#" class="title" style="background-color: {{ item.get_color_display }};">{{ item.name }}</a>
-        <div class="info">
-            <div>
-                <a href="#">
-                    <i class="fa fa-star" aria-hidden="true" style=""></i>
-                </a>
-            </div>
-            <div>
-                <i class="fa fa-user-o" aria-hidden="true"></i>
-                <span>{{ item.join_count }}</span>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">我创建的</h3>
         </div>
+        <div class="panel-body">
+            {% for item in project_dict.my %}
+                <div class="item">
+                    <a href="#" class="title" style="background-color: {{ item.get_color_display }};">{{ item.name }}</a>
+                    <div class="info">
+                        <div>
+                            <a href="{% url 'project_star' project_type='my' project_id=item.id %}">
+                                <i class="fa fa-star" aria-hidden="true" style="color: #d5d5d5"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <i class="fa fa-user-o" aria-hidden="true"></i>
+                            <span>{{ item.join_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-      {% endfor %}
-  </div>
-</div>
+    </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">我参与的</h3>
-  </div>
-  <div class="panel-body">
-    {% for item in project_dict.join %}
-        <div class="item">
-        <a href="#" class="title" style="background-color: {{ item.get_color_display }};">{{ item.name }}</a>
-        <div class="info">
-            <div>
-                <a href="#">
-                    <i class="fa fa-star" aria-hidden="true" style=""></i>
-                </a>
-            </div>
-            <div>
-                <i class="fa fa-user-o" aria-hidden="true"></i>
-                <span>{{ item.join_count }}</span>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">我参与的</h3>
         </div>
+        <div class="panel-body">
+            {% for item in project_dict.join %}
+                <div class="item">
+                    <a href="#" class="title" style="background-color: {{ item.get_color_display }};">{{ item.name }}</a>
+                    <div class="info">
+                        <div>
+                            <a href="{% url 'project_star' project_type='join' project_id=item.id %}">
+                                <i class="fa fa-star" aria-hidden="true" style="color: #d5d5d5"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <i class="fa fa-user-o" aria-hidden="true"></i>
+                            <span>{{ item.join_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-      {% endfor %}
-  </div>
+    </div>
 </div>
-
-</div>
-
 
 <!-- Modal -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -110,7 +136,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                <h4 class="modal-title" id="myModalLabel">创建新项目</h4>
             </div>
             <div class="modal-body">
                 <form id="addForm">
@@ -148,12 +174,10 @@
                 data: $('#addForm').serialize(),
                 dataType:'JSON',
                 success:function (res){
-                    console.log(res);
                     if (res.status){
-                    $('#addModal').modal('hide');
-                    location.href = location.href;
+                        location.href = location.href;
                     }else {
-                        $.each(res.error, function (key, value) {
+                        $.each(res.errors, function (key, value) {
                             $("#id_" + key).next().text(value[0]);
                         })
                     }
@@ -161,7 +185,5 @@
             })
         })
     }
-
-
     </script>
 {% endblock %}
