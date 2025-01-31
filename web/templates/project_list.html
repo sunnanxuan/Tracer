@@ -47,6 +47,45 @@
         .item .info a:hover {
             color: #ffd700;
         }
+
+
+
+
+       .color-radio label {
+    margin-left: 0;
+    display: inline-block; /* 确保 label 可见 */
+    position: relative; /* 使子元素的定位相对于 label */
+}
+
+.color-radio input[type='radio'] {
+    opacity: 0; /* 隐藏输入框，但保留其交互功能 */
+    position: absolute; /* 将输入框移出文档流 */
+    top: 0; /* 与 label 顶部对齐 */
+    left: 0; /* 与 label 左侧对齐 */
+    width: 25px; /* 与 span 的宽度一致 */
+    height: 25px; /* 与 span 的高度一致 */
+    margin: 0; /* 去除默认的 margin */
+    cursor: pointer; /* 鼠标悬停时显示指针 */
+    z-index: 1; /* 确保 input 在 span 上方 */
+}
+
+.color-radio .cycle {
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    border: 2px solid #dddddd;
+    position: relative; /* 使 span 相对于 label 定位 */
+    z-index: 0; /* 确保 span 在 input 下方 */
+}
+
+.color-radio input[type='radio']:checked + .cycle {
+    border: 2px solid black;
+}
+
+
+
+
     </style>
 {% endblock %}
 
