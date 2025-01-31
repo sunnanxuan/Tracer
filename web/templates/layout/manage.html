@@ -15,8 +15,15 @@
         }
 
         .navbar-default {
-            background-color: #5bc0de;
+            background-color: #87CEEB;
         }
+
+        .nav.navbar-nav li.active a,
+        .nav.navbar-nav li a:hover {
+            background-color: #5bc0de; /* 鼠标悬停背景颜色 */
+            color: white; /* 鼠标悬停文字颜色 */
+        }
+
     </style>
     {% block css %}{% endblock %}
 </head>
@@ -44,7 +51,7 @@
                     {% manage_menu_list request %}
                 {% endif %}
 
-</ul>
+            </ul>
 
             <ul class="nav navbar-nav navbar-right">
                 <ul class="nav navbar-nav navbar-right">
