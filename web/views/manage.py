@@ -33,10 +33,7 @@ def file(request, project_id):
     # 使用 project_id 进行逻辑处理
     return render(request, 'file.html', {'project': project})
 
-def wiki(request, project_id):
-    project = get_object_or_404(models.Project, id=project_id)
-    # 使用 project_id 进行逻辑处理
-    return render(request, 'wiki.html', {'project': project})
+
 
 def setting(request, project_id):
     project = get_object_or_404(models.Project, id=project_id)

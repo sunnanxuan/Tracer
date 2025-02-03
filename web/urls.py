@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, manage
+from web.views import account, index, project, manage, wiki
 
 
 
@@ -22,7 +22,7 @@ urlpatterns = [
         path("issues/", manage.issues, name='issues'),
         path("statistics/", manage.statistics, name='statistics'),
         path("file/", manage.file, name='file'),
-        path("wiki/", manage.wiki, name='wiki'),
+        path("wiki/", wiki.wiki, name='wiki'),
         path("setting/", manage.setting, name='setting'),
 
     ])),
