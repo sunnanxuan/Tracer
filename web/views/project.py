@@ -35,6 +35,8 @@ def project_list(request):
         # 调用 AWS S3 API 创建新桶
         bucket_name = f"tracer-project-{project.id}-{uuid.uuid4().hex[:8]}".lower()
         create_s3_bucket(bucket_name)
+        project.bucket = bucket_name
+        project.save()
 
         return JsonResponse({'status':True})
 
