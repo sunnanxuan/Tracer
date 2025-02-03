@@ -21,11 +21,22 @@
             min-height: 500px;
         }
 
+        .title-list ul{
+            padding-left: 15px;
+        }
+
+        .title-list ul a{
+            display: block;
+            padding: 5px 0;
+        }
+
         .content {
             border-left: 1px solid #dddddd;
             min-height: 600px;
             margin-left: -1px;
         }
+
+
     </style>
 
 {% endblock %}
@@ -44,7 +55,8 @@
 
         <div class="panel-body">
             <div class="col-sm-3 title-list">
-                <div>目录</div>
+                <ul id="catalog">
+                </ul>
             </div>
             <div class="col-sm-9 content">
                 <div style="text-align: center; margin-top: 50px;">
@@ -60,5 +72,43 @@
 {% endblock %}
 
 {% block js %}
+
+    <script>
+
+    var WIKI_DETAIL_URL="{% url 'wiki' project_id=request.tracer.project.id %}";
+
+    $(function (){
+        initCatalog();
+    })
+
+    function initCatalog(){
+        $.ajax({
+            url:"{% url 'wiki_catalog' project_id=request.tracer.project.id %}",
+            type:"GET",
+            dataType:"JSON",
+            success:function (res){
+                if (res.status){
+                    $.each(res.data, function (index, item){
+                        var href=WIKI_DETAIL_URL+ "?wiki_id=" +item.id;
+                        var li=$("<li>").attr('id','id_'+item.id).append($('<a>').text(item.title).attr('href',href)).append($('<ul>'));
+                        if (!item.parent_id){
+                            $('#catalog').append(li);
+                        }
+                        else {
+                            $('#id_'+item.parent_id).children('ul').append(li)
+                        }
+                    })
+                }
+                else {
+                    alert("初始化目录失败")
+                }
+            }
+        })
+    }
+
+
+    </script>
+
+
 
 {% endblock %}

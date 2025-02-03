@@ -15,6 +15,7 @@ class UserInfo(models.Model):
 
 
 
+
 class PricePolicy(models.Model):
     category_choice = (
         (1,'免费版'),
@@ -87,6 +88,7 @@ class Wiki(models.Model):
     title=models.CharField(verbose_name='标题', max_length=32)
     content=models.TextField(verbose_name='内容')
     parent =models.ForeignKey(verbose_name='父文章', to='Wiki', null=True, blank=True, on_delete=models.CASCADE)
+    depth = models.IntegerField(verbose_name='深度', default=1)
 
     def __str__(self):
         return self.title

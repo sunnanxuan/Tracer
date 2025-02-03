@@ -10,9 +10,8 @@ from web.forms.wiki import WikiModelForm
 
 
 def wiki(request, project_id):
-    project = get_object_or_404(models.Project, id=project_id)
-    # 使用 project_id 进行逻辑处理
-    return render(request, 'wiki.html', {'project': project})
+    wiki_id = request.GET.get('wiki_id')
+    return render(request, 'wiki.html')
 
 
 
@@ -23,8 +22,18 @@ def wiki_add(request, project_id):
         return render(request, 'wiki_add.html', {'form': form})
     form=WikiModelForm(request, data=request.POST)
     if form.is_valid():
+        if form.instance.parent:
+            form.instance.depth = form.instance.parent.depth + 1
+        else:
+            form.instance.depth = 1
         form.instance.project=request.tracer.project
         form.save()
         url=reverse('wiki', kwargs={'project_id':project_id})
         return redirect(url)
     return render(request, 'wiki_add.html', {'form': form})
+
+
+
+def wiki_catalog(request, project_id):
+    data=models.Wiki.objects.filter(project=request.tracer.project).values('id','title','parent_id').order_by('depth','id')
+    return JsonResponse({'status':True,'data':list(data)})
