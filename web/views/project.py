@@ -1,7 +1,12 @@
-from django.shortcuts import render,redirect,HttpResponse
+import uuid
+import boto3
+from botocore.exceptions import ClientError
+from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from web.forms.project import ProjectModelForm
 from web import models
+from django.conf import settings
+from utils.create_bucket import create_s3_bucket
 
 
 
@@ -26,7 +31,11 @@ def project_list(request):
     form = ProjectModelForm(request,data=request.POST)
     if form.is_valid():
         form.instance.creator = request.tracer.user
-        form.save()
+        project = form.save()
+        # 调用 AWS S3 API 创建新桶
+        bucket_name = f"tracer-project-{project.id}-{uuid.uuid4().hex[:8]}".lower()
+        create_s3_bucket(bucket_name)
+
         return JsonResponse({'status':True})
 
     return JsonResponse({'status':False, 'errors':form.errors})

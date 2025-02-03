@@ -69,9 +69,7 @@ class Project(models.Model):
     join_count=models.SmallIntegerField(verbose_name='参与人数', default=1)
     creator=models.ForeignKey(verbose_name='创建者', to='UserInfo',on_delete=models.CASCADE)
     create_datetime = models.DateTimeField(verbose_name='创建实际', auto_now_add=True)
-
-
-
+    bucket = models.CharField(verbose_name='S3桶', max_length=128, null=True, blank=True)
 
 
 class ProjectUser(models.Model):
