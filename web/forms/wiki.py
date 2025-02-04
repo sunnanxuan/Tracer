@@ -19,3 +19,4 @@ class WikiModelForm(BootStrapForm, forms.ModelForm):
         total_data_list.extend(data_list)
 
         self.fields['parent'].choices = total_data_list
+

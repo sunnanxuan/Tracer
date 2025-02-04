@@ -44,3 +44,33 @@ def create_s3_bucket(bucket_name):
         print(f"Error creating bucket: {e}")
 
 
+
+
+
+
+def upload_file_to_s3(bucket_name, file_obj, object_name=None):
+    if object_name is None:
+        object_name = file_obj.name
+
+    s3_client = boto3.client(
+        's3',
+        region_name=settings.AWS_DEFAULT_REGION,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+
+    try:
+        # 移除 ACL 参数
+        s3_client.upload_fileobj(file_obj, bucket_name, object_name)
+        print(f"File '{object_name}' uploaded successfully to bucket '{bucket_name}'.")
+
+        region = settings.AWS_DEFAULT_REGION
+        if region == 'us-east-1':
+            file_url = f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
+        else:
+            file_url = f"https://{bucket_name}.s3.{region}.amazonaws.com/{object_name}"
+
+        return file_url
+    except ClientError as e:
+        print(f"Error uploading file: {e}")
+        return None

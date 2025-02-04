@@ -1,12 +1,9 @@
 import uuid
-import boto3
-from botocore.exceptions import ClientError
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from web.forms.project import ProjectModelForm
 from web import models
-from django.conf import settings
-from utils.create_bucket import create_s3_bucket
+from utils.AWS_S3.S3_bucket import create_s3_bucket
 
 
 
