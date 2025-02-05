@@ -12,12 +12,28 @@
             margin-left: 20px;
             margin-right: 20px;
         }
+
+        .panel-default > .panel-heading .function .upload {
+            position: relative; /* 关键：使 input 的绝对定位以按钮为参考 */
+            overflow: hidden;
+        }
+
+        .panel-default > .panel-heading .function .upload input {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0; /* 修改 left 为 0，确保 input 在按钮内部 */
+            width: 100%; /* 覆盖整个父容器 */
+            height: 100%;
+            cursor: pointer; /* 鼠标悬停时显示指针 */
+        }
+
+
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="panel panel-default">
-        <!-- Default panel contents -->
         <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between;">
             <div>
                 <a href="{% url 'file' project_id=request.tracer.project.id %}">
@@ -32,14 +48,15 @@
                 {% endfor %}
             </div>
             <div class="function">
+                <div class="btn btn-primary btn-xs upload">
+                    <div><i class="fa fa-upload" aria-hidden="true"></i> 上传文件</div>
+                    <input type="file" multiple name="uploadFile" id="uploadFile">
+                </div>
                 <a type="button" class="btn btn btn-success btn-xs" data-toggle="modal" data-target="#addModal"
                    data-whatever="新建文件夹">
                     <i class="fa fa-plus-circle" aria-hidden="true"></i> 新建文件夹
                 </a>
-                <a class="btn btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"
-                   data-whatever="删除">
-                    <i class="fa fa-plus-circle" aria-hidden="true"></i> 删除
-                </a>
+
             </div>
         </div>
 
@@ -161,11 +178,53 @@
         var FOLDER_URL = "{% url 'file' project_id=request.tracer.project.id %}";
         var FILE_DELETE_URL = "{% url 'file_delete' project_id=request.tracer.project.id %}";
 
+
         $(function () {
             initAddModel();
             bindModelSubmit();
             bindDeleteSubmit();
+            bindUploadFile();
         });
+
+
+        function bindUploadFile() {
+    $('#uploadFile').change(function () {
+        var fileList = $(this)[0].files;
+        $.each(fileList, function (index, fileObject) {
+            var formData = new FormData();
+            formData.append('uploadFile', fileObject);
+
+            // 传递当前所在文件夹的 ID
+            var currentFolderId = new URLSearchParams(window.location.search).get('folder');
+            if (currentFolderId) {
+                formData.append('folder', currentFolderId);
+            }
+
+            // 添加 CSRF token（如果需要）
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                url: "{% url 'upload_file' project_id=request.tracer.project.id %}",
+                type: "POST",
+                data: formData,
+                processData: false,  // 不对数据进行预处理
+                contentType: false,  // 不设置 contentType，由浏览器自动添加
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        location.reload();
+                    } else {
+                        alert("上传失败：" + res.error);
+                    }
+                },
+                error: function () {
+                    alert("上传出现错误");
+                }
+            });
+        });
+    });
+}
+
 
 
         function bindDeleteSubmit() {

@@ -80,14 +80,6 @@ def upload_file_to_s3(bucket_name, file_obj, object_name=None):
 
 
 
-def extract_key_from_s3_url(url):
-    parsed_url = urlparse(url)
-    # parsed_url.path 得到的可能是 "/24891aeff78294e51db8c8baa66f1f43.png"
-    key = parsed_url.path.lstrip('/')
-    return key
-
-
-
 
 
 def delete_file_from_s3(bucket_name, object_key):
@@ -137,6 +129,25 @@ def delete_file_list_from_s3(bucket_name, key_list):
         print(f"Error deleting files from S3: {e}")
         return False
     return True
+
+
+
+
+
+def get_temporary_credentials(duration_seconds=3600):
+    sts_client = boto3.client(
+        'sts',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_DEFAULT_REGION,
+    )
+    try:
+        response = sts_client.get_session_token(DurationSeconds=duration_seconds)
+        credentials = response['Credentials']
+        return credentials
+    except ClientError as e:
+        print("Error obtaining temporary credentials:", e)
+        return None
 
 
 

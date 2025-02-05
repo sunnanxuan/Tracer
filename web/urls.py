@@ -31,6 +31,8 @@ urlpatterns = [
 
         path("file/", file.file, name='file'),
         path("file/delete", file.file_delete, name='file_delete'),
+        path('/file/upload/', file.upload_file, name='upload_file'),
+
         path("setting/", manage.setting, name='setting'),
 
     ])),
