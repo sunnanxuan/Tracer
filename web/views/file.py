@@ -2,11 +2,13 @@ from lib2to3.fixes.fix_input import context
 
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse
+from requests import delete
+
 from web import models
 from django.urls import reverse
 from web.forms.file import FolderModelForm
 from django.views.decorators.csrf import csrf_exempt
-from utils.AWS_S3.S3_bucket import upload_file_to_s3
+from utils.AWS_S3.S3_bucket import upload_file_to_s3,delete_file_from_s3, delete_file_list_from_s3,extract_key_from_s3_url
 from utils.encrypt import uid
 from django.utils import timezone
 
@@ -66,11 +68,32 @@ def file_delete(request, project_id):
     fid=request.GET.get('fid')
     delete_object=models.FileRepository.objects.filter(id=fid,project=request.tracer.project).first()
     if delete_object.file_type == 1:
-        # 如果是文件，可能执行相应逻辑
-        pass
-    else:
-        # 如果是文件夹，执行相应逻辑
-        pass
+        request.tracer.project.use_space-=delete_object.file_size
+        request.tracer.project.save()
+        delete_file_from_s3(request.tracer.project.bucket, extract_key_from_s3_url(delete_object.key))
+        delete_object.delete()
+        return JsonResponse({'status': True})
+
+    total_size=0
+    key_list=[]
+
+    folder_list=[delete_object,]
+    for folder in folder_list:
+        child_list=models.FileRepository.objects.filter(parent=folder,project=request.tracer.project).order_by('-file_type')
+        for child in child_list:
+            if child.file_type==2:
+                folder_list.append(child)
+            else:
+                total_size+=child.file_size
+                key_list.append(extract_key_from_s3_url(child.key))
+
+    if key_list:
+        delete_file_list_from_s3(request.tracer.project.bucket, key_list)
+
+    if total_size:
+        request.tracer.project.use_space-=total_size
+        request.tracer.project.save()
+
     delete_object.delete()
     return JsonResponse({'status':True})
 

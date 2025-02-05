@@ -9,6 +9,7 @@ django.setup()
 import boto3
 from botocore.exceptions import ClientError
 from django.conf import settings
+from urllib.parse import urlparse
 
 
 def create_s3_bucket(bucket_name):
@@ -74,3 +75,68 @@ def upload_file_to_s3(bucket_name, file_obj, object_name=None):
     except ClientError as e:
         print(f"Error uploading file: {e}")
         return None
+
+
+
+
+
+def extract_key_from_s3_url(url):
+    parsed_url = urlparse(url)
+    # parsed_url.path 得到的可能是 "/24891aeff78294e51db8c8baa66f1f43.png"
+    key = parsed_url.path.lstrip('/')
+    return key
+
+
+
+
+
+def delete_file_from_s3(bucket_name, object_key):
+    s3_client = boto3.client(
+        's3',
+        region_name=settings.AWS_DEFAULT_REGION,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+    try:
+        response = s3_client.delete_object(Bucket=bucket_name, Key=object_key)
+        # 可选：打印返回的 response 以供调试
+        print("Delete response:", response)
+    except ClientError as e:
+        print(f"Error deleting file from S3: {e}")
+        return False
+    return True
+
+
+
+
+
+
+
+def delete_file_list_from_s3(bucket_name, key_list):
+    if not key_list:
+        print("没有要删除的文件")
+        return True
+
+    s3_client = boto3.client(
+        's3',
+        region_name=settings.AWS_DEFAULT_REGION,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+    # 构造 Delete 参数，Delete 参数需要包含一个 "Objects" 列表，
+    # 列表中的每个字典至少包含 "Key" 键
+    delete_params = {
+        'Objects': [{'Key': key} for key in key_list],
+        'Quiet': False  # 可选，若设置为 True，则删除响应中不会返回被删除的对象信息
+    }
+
+    try:
+        response = s3_client.delete_objects(Bucket=bucket_name, Delete=delete_params)
+        print("Delete response:", response)
+    except ClientError as e:
+        print(f"Error deleting files from S3: {e}")
+        return False
+    return True
+
+
+
