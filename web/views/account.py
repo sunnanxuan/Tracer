@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from web import models
 import uuid
-import datetime
+from django.utils import timezone
 
 
 
@@ -26,7 +26,7 @@ def register(request):
             price_policy=policy_object,
             count=0,
             price=0,
-            start_datetime=datetime.datetime.now(),
+            start_datetime=timezone.now(),
         )
         return JsonResponse({'status': True, 'data':'/login/sms/'})
     else:
