@@ -51,8 +51,11 @@
                             <i class="fa fa-file" aria-hidden="true"></i>
                             {{ item.name }}
                         {% else %}
-                            <i class="fa fa-folder" aria-hidden="true"></i>
-                            {{ item.name }}
+                            <a href="{% url 'file' project_id=request.tracer.project.id %}?folder={{ item.id }}">
+                                <i class="fa fa-folder" aria-hidden="true"></i>
+                                {{ item.name }}
+                            </a>
+
                         {% endif %}
                     </td>
                     <td>
@@ -89,7 +92,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="form">
-                    {% csrf_token %}
+                        {% csrf_token %}
                         {% for filed in form %}
                             <div class="form-group">
                                 <label for="{{ filed.id_for_label }}">{{ filed.label }}</label>

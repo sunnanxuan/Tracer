@@ -10,7 +10,7 @@ from utils.encrypt import uid
 
 def file(request, project_id):
     parent_object=None
-    folder_id=request.GET.get('folder_id', '')
+    folder_id=request.GET.get('folder', '')
     if folder_id.isdecimal():
         parent_object=models.FileRepository.objects.filter(id=int(folder_id),file_type=2,
                                                            project=request.tracer.project).first()
