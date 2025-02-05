@@ -19,7 +19,18 @@
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between;">
-            <h3 class="panel-title"><i class="fa fa-book"></i> {{ request.tracer.project.name }}</h3>
+            <div>
+                <a href="{% url 'file' project_id=request.tracer.project.id %}">
+                    <i class="fa fa-home" aria-hidden="true"></i>
+                    <span>文件库</span>
+                </a>
+                {% for record in breadcrumb_list %}
+                    <a href="{% url 'file' project_id=request.tracer.project.id %}?folder={{ record.id }}">
+                        <i class="fa fa-caret-right" aria-hidden="true"></i>
+                        <span>{{ record.name }}</span>
+                    </a>
+                {% endfor %}
+            </div>
             <div class="function">
                 <a type="button" class="btn btn btn-success btn-xs" data-toggle="modal" data-target="#addModal"
                    data-whatever="新建文件夹">
@@ -69,11 +80,26 @@
                         {{ item.update_user.username }}
                     </td>
                     <td>
-                        {{ item.updata_datetime }}
+                        {{ item.update_datetime }}
                     </td>
                     <td>
-                        <a type="button" class="btn btn-info btn-xs">编辑</a>
-                        <a type="button" class="btn btn-danger btn-xs">删除</a>
+                        {% if item.file_type == 2 %}
+                            <a class="btn btn-default btn-xs"
+                               data-toggle="modal"
+                               data-target="#addModal"
+                               data-fid="{{ item.id }}"
+                               data-name="{{ item.name }}"
+                               data-whatever="修改文件夹">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </a>
+
+                        {% endif %}
+
+                        <a class="btn btn btn-danger btn-xs"
+                           data-toggle="modal"
+                           data-fid="{{ item.id }}"
+                           data-target="#alertModal">
+                            <i class="fa fa-trash" aria-hidden="true"></i> </a>
                     </td>
                 </tr>
             {% endfor %}
@@ -92,7 +118,9 @@
                 </div>
                 <div class="modal-body">
                     <form id="form">
+
                         {% csrf_token %}
+                        <input class="hide" type="text" name="fid" id="fid">
                         {% for filed in form %}
                             <div class="form-group">
                                 <label for="{{ filed.id_for_label }}">{{ filed.label }}</label>
@@ -110,26 +138,76 @@
         </div>
     </div>
 
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+                <h4>是否确定删除？</h4>
+                <p style="padding-top: 20px; padding-bottom: 20px">文件夹中包含的所有文件都会被删除。</p>
+                <p style="text-align: right">
+                    <a class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取 消</a>
+                    <button id="btnDelete" type="button" class="btn btn-danger btn-sm">确 定</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}
 
 {% block js %}
     <script>
         var FOLDER_URL = "{% url 'file' project_id=request.tracer.project.id %}";
+        var FILE_DELETE_URL = "{% url 'file_delete' project_id=request.tracer.project.id %}";
 
         $(function () {
             initAddModel();
             bindModelSubmit();
+            bindDeleteSubmit();
         });
+
+
+        function bindDeleteSubmit() {
+            $('#btnDelete').click(function () {
+                $.ajax({
+                    url: FILE_DELETE_URL,
+                    type: "GET",
+                    data: {fid: $(this).attr('fid')},
+                    success: function (res) {
+                        if (res.status) {
+                            location.href = location.href;
+                        }
+                    }
+                })
+            })
+        }
+
 
         function initAddModel() {
             $('#addModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
                 var recipient = button.data('whatever');
+                var name = button.data('name');
+                var fid = button.data('fid');
                 var modal = $(this);
                 modal.find('.modal-title').text(recipient);
                 modal.find('.error-msg').empty();
-                $('#form')[0].reset();
+
+                if (fid) {
+                    modal.find('#id_name').val(name);
+                    modal.find('#fid').val(fid);
+                } else {
+                    $('#form')[0].reset();
+                }
             });
+
+            $('#alertModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var fid = button.data('fid');
+                $('#btnDelete').attr('fid', fid);
+            });
+
         }
 
         function bindModelSubmit() {
