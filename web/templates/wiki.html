@@ -4,7 +4,6 @@
 {% block title %}wiki{% endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{% static 'plugin/editor-md/css/editormd.preview.min.css' %}">
     <style>
         .panel-heading {
             display: flex;
@@ -36,9 +35,10 @@
             margin-left: -1px;
         }
 
-
+        .ck-editor__editable {
+            min-height: 500px;
+        }
     </style>
-
 {% endblock %}
 
 {% block content %}
@@ -70,11 +70,9 @@
             </div>
             <div class="col-sm-9 content">
                 {% if wiki_object %}
-                    <div id="previewMarkdown">
-                        <textarea>{{ wiki_object.content }}</textarea>
+                    <div id="previewContent">
+                        {{ wiki_object.content|safe }}
                     </div>
-
-
                 {% else %}
                     <div style="text-align: center; margin-top: 50px;">
                         <h4>《{{ request.tracer.project.name }}》wiki文档库</h4>
@@ -86,36 +84,16 @@
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block js %}
-
-    <script src="{% static 'plugin/editor-md/editormd.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/marked.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/prettify.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/raphael.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/underscore.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/sequence-diagram.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/flowchart.min.js' %}"></script>
-    <script src="{% static 'plugin/editor-md/lib/jquery.flowchart.min.js' %}"></script>
-
-
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
     <script>
-
         var WIKI_DETAIL_URL = "{% url 'wiki' project_id=request.tracer.project.id %}";
 
         $(function () {
             initCatalog();
-            initpreviewMarkdown();
-        })
-
-        function initpreviewMarkdown() {
-            editormd.markdownToHTML('previewMarkdown', {
-                htmlDecode: "style, script, iframe"
-            });
-        }
-
+        });
 
         function initCatalog() {
             $.ajax({
@@ -126,23 +104,21 @@
                     if (res.status) {
                         $.each(res.data, function (index, item) {
                             var href = WIKI_DETAIL_URL + "?wiki_id=" + item.id;
-                            var li = $("<li>").attr('id', 'id_' + item.id).append($('<a>').text(item.title).attr('href', href)).append($('<ul>'));
+                            var li = $("<li>")
+                                .attr('id', 'id_' + item.id)
+                                .append($('<a>').text(item.title).attr('href', href))
+                                .append($('<ul>'));
                             if (!item.parent_id) {
                                 $('#catalog').append(li);
                             } else {
-                                $('#id_' + item.parent_id).children('ul').append(li)
+                                $('#id_' + item.parent_id).children('ul').append(li);
                             }
-                        })
+                        });
                     } else {
-                        alert("初始化目录失败")
+                        alert("初始化目录失败");
                     }
                 }
-            })
+            });
         }
-
-
     </script>
-
-
-
 {% endblock %}

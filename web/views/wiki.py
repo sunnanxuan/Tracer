@@ -18,30 +18,39 @@ def wiki(request, project_id):
     return render(request, 'wiki.html', {'wiki_object':wiki_object})
 
 
-
-
 def wiki_add(request, project_id):
+
     if request.method == 'GET':
-        form=WikiModelForm(request)
+        form = WikiModelForm(request)
         return render(request, 'wiki_form.html', {'form': form})
-    form=WikiModelForm(request, data=request.POST)
+
+    # 修改处：同时传入 request.FILES 以处理文件上传字段
+    print('来了吗？')
+    form = WikiModelForm(request, data=request.POST, files=request.FILES)
     print(form)
     if form.is_valid():
         if form.instance.parent:
             form.instance.depth = form.instance.parent.depth + 1
         else:
             form.instance.depth = 1
-        form.instance.project=request.tracer.project
+        form.instance.project = request.tracer.project
         form.save()
-        url=reverse('wiki', kwargs={'project_id':project_id})
+        url = reverse('wiki', kwargs={'project_id': project_id})
         return redirect(url)
+
     return render(request, 'wiki_form.html', {'form': form})
+
+
+
+
 
 
 
 def wiki_catalog(request, project_id):
     data=models.Wiki.objects.filter(project=request.tracer.project).values('id','title','parent_id').order_by('depth','id')
     return JsonResponse({'status':True,'data':list(data)})
+
+
 
 
 
