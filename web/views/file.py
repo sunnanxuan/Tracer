@@ -1,20 +1,17 @@
-from lib2to3.fixes.fix_input import context
-
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from web import models
-from django.urls import reverse
 from web.forms.file import FolderModelForm
-from django.views.decorators.csrf import csrf_exempt
 from utils.AWS_S3.S3_bucket import upload_file_to_s3, delete_file_from_s3, delete_file_list_from_s3, \
     get_temporary_credentials
-from utils.encrypt import uid
+from urllib.parse import quote
 from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.http import require_POST
 import uuid
 import boto3
 from botocore.exceptions import ClientError
+from django.views.decorators.http import require_GET
 
 
 def file(request, project_id):
@@ -215,4 +212,70 @@ def upload_file(request, project_id):
     project.save()
 
     return JsonResponse({'status': True, 'file_urls': file_urls})
+
+
+
+
+
+
+
+@require_GET
+def download_file(request, project_id):
+    """
+    根据文件ID生成预签名URL并重定向进行文件下载，
+    同时设置下载时浏览器默认保存的文件名为 FileRepository.name，
+    解决文件名包含非 ASCII 字符导致编码问题的问题。
+    URL 示例：/download_file/1/?fid=123
+    """
+    # 获取文件ID（前端通过查询参数传递 fid）
+    file_id = request.GET.get("fid", "")
+    if not file_id.isdigit():
+        return JsonResponse({'status': False, 'error': '无效的文件ID'})
+
+    # 查询对应的文件记录，确保文件属于当前项目且是文件类型（file_type == 1）
+    file_obj = models.FileRepository.objects.filter(
+        id=int(file_id),
+        file_type=1,
+        project=request.tracer.project
+    ).first()
+    if not file_obj:
+        return JsonResponse({'status': False, 'error': '文件不存在'})
+
+    # 获取当前项目的 bucket 名称
+    bucket_name = request.tracer.project.bucket
+
+    # 获取临时凭证
+    credentials = get_temporary_credentials()
+    if not credentials:
+        return JsonResponse({'status': False, 'error': '获取临时凭证失败'})
+
+    # 使用临时凭证创建 S3 客户端
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=credentials['AccessKeyId'],
+        aws_secret_access_key=credentials['SecretAccessKey'],
+        aws_session_token=credentials['SessionToken'],
+        region_name=settings.AWS_DEFAULT_REGION,
+    )
+
+    # 使用 RFC 5987 格式对文件名进行 URL 编码，确保响应头可以表示非 ASCII 字符
+    encoded_filename = quote(file_obj.name)
+    content_disposition = f"attachment; filename*=UTF-8''{encoded_filename}"
+
+    # 生成预签名 URL，同时设置 ResponseContentDisposition 参数
+    try:
+        presigned_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': file_obj.key,
+                'ResponseContentDisposition': content_disposition,
+            },
+            ExpiresIn=3600  # 有效期1小时
+        )
+    except ClientError as e:
+        return JsonResponse({'status': False, 'error': f'生成预签名 URL 失败: {str(e)}'})
+
+    # 重定向到预签名 URL，浏览器将自动启动文件下载，并使用指定的文件名
+    return redirect(presigned_url)
 

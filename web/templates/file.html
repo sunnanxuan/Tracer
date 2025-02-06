@@ -117,6 +117,12 @@
                                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                             </a>
 
+                        {% else %}
+                            <a class="btn btn-default btn-xs"
+                               href="{% url 'download_file' project_id=request.tracer.project.id %}?fid={{ item.id }}">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                            </a>
+
                         {% endif %}
 
                         <a class="btn btn btn-danger btn-xs"
@@ -195,72 +201,71 @@
 
 
         function bindUploadFile() {
-    $('#uploadFile').change(function () {
-        var fileList = $(this)[0].files;
-        if (fileList.length === 0) {
-            return;
-        }
-
-        // 显示进度条，并重置进度
-        $("#uploadProgress").show();
-        $("#uploadProgress .progress-bar").css("width", "0%").attr("aria-valuenow", 0).text("0%");
-
-        // 创建一个 FormData 对象，一次性添加所有文件
-        var formData = new FormData();
-        $.each(fileList, function (index, fileObject) {
-            // 注意这里多个文件使用同一个字段名 'uploadFile'
-            formData.append('uploadFile', fileObject);
-        });
-
-        // 传递当前所在文件夹的 ID
-        var currentFolderId = new URLSearchParams(window.location.search).get('folder');
-        if (currentFolderId) {
-            formData.append('folder', currentFolderId);
-        }
-
-        // 添加 CSRF token（如果需要）
-        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-
-        $.ajax({
-            url: "{% url 'upload_file' project_id=request.tracer.project.id %}",
-            type: "POST",
-            data: formData,
-            processData: false,  // 不对数据进行预处理
-            contentType: false,  // 不设置 contentType，由浏览器自动添加
-            dataType: "JSON",
-            xhr: function () {
-                var xhr = new window.XMLHttpRequest();
-                // 监听上传进度事件
-                xhr.upload.addEventListener("progress", function (evt) {
-                    if (evt.lengthComputable) {
-                        var percentComplete = Math.round((evt.loaded / evt.total) * 100);
-                        $("#uploadProgress .progress-bar").css("width", percentComplete + "%")
-                            .attr("aria-valuenow", percentComplete)
-                            .text(percentComplete + "%");
-                    }
-                }, false);
-                return xhr;
-            },
-            success: function (res) {
-                if (res.status) {
-                    // 上传成功后延时隐藏进度条，并刷新页面
-                    setTimeout(function(){
-                        $("#uploadProgress").hide();
-                        location.reload();
-                    }, 500);
-                } else {
-                    $("#uploadProgress").hide();
-                    alert("上传失败：" + res.error);
+            $('#uploadFile').change(function () {
+                var fileList = $(this)[0].files;
+                if (fileList.length === 0) {
+                    return;
                 }
-            },
-            error: function () {
-                $("#uploadProgress").hide();
-                alert("上传出现错误");
-            }
-        });
-    });
-}
 
+                // 显示进度条，并重置进度
+                $("#uploadProgress").show();
+                $("#uploadProgress .progress-bar").css("width", "0%").attr("aria-valuenow", 0).text("0%");
+
+                // 创建一个 FormData 对象，一次性添加所有文件
+                var formData = new FormData();
+                $.each(fileList, function (index, fileObject) {
+                    // 注意这里多个文件使用同一个字段名 'uploadFile'
+                    formData.append('uploadFile', fileObject);
+                });
+
+                // 传递当前所在文件夹的 ID
+                var currentFolderId = new URLSearchParams(window.location.search).get('folder');
+                if (currentFolderId) {
+                    formData.append('folder', currentFolderId);
+                }
+
+                // 添加 CSRF token（如果需要）
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                $.ajax({
+                    url: "{% url 'upload_file' project_id=request.tracer.project.id %}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,  // 不对数据进行预处理
+                    contentType: false,  // 不设置 contentType，由浏览器自动添加
+                    dataType: "JSON",
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        // 监听上传进度事件
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                                $("#uploadProgress .progress-bar").css("width", percentComplete + "%")
+                                    .attr("aria-valuenow", percentComplete)
+                                    .text(percentComplete + "%");
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function (res) {
+                        if (res.status) {
+                            // 上传成功后延时隐藏进度条，并刷新页面
+                            setTimeout(function () {
+                                $("#uploadProgress").hide();
+                                location.reload();
+                            }, 500);
+                        } else {
+                            $("#uploadProgress").hide();
+                            alert("上传失败：" + res.error);
+                        }
+                    },
+                    error: function () {
+                        $("#uploadProgress").hide();
+                        alert("上传出现错误");
+                    }
+                });
+            });
+        }
 
 
         function bindDeleteSubmit() {

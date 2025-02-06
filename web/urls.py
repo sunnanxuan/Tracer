@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, manage, wiki, file
+from web.views import account, index, project, manage, wiki, file, setting
 
 
 
@@ -32,8 +32,10 @@ urlpatterns = [
         path("file/", file.file, name='file'),
         path("file/delete", file.file_delete, name='file_delete'),
         path('file/upload/', file.upload_file, name='upload_file'),
+        path('file/download/', file.download_file, name='download_file'),
 
-        path("setting/", manage.setting, name='setting'),
+        path("setting/", setting.setting, name='setting'),
+        path("setting/delete", setting.setting_delete, name='setting_delete'),
 
     ])),
 
