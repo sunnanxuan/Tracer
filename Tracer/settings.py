@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "web.apps.WebConfig"
+    "web.apps.WebConfig",
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "web.middleware.auth.AuthMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = "Tracer.urls"
@@ -152,6 +154,8 @@ WHITE_REGEX_URL_LIST = [
 ]
 
 
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 

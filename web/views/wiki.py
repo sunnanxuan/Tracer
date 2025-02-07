@@ -101,6 +101,7 @@ def wiki_edit(request, project_id, wiki_id):
 
 @csrf_exempt
 def wiki_upload(request, project_id):
+    print('调了')
     """
     处理 CKEditor 图片上传请求
     """
@@ -110,10 +111,11 @@ def wiki_upload(request, project_id):
         'url': None
     }
 
-    print(request.FILES)
+
 
     # CKEditor 的图片上传字段为 'upload'
     image_object = request.FILES.get('upload')
+    print('$$$',image_object)
     if not image_object:
         result['message'] = '文件不存在'
         return JsonResponse(result)
@@ -129,6 +131,7 @@ def wiki_upload(request, project_id):
     result['success'] = 1
     result['message'] = '上传文件成功'
     result['url'] = image_url
+    print(result)
     return JsonResponse(result)
 
 
