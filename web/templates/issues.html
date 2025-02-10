@@ -1,5 +1,6 @@
 {% extends 'layout/manage.html' %}
 {% load static %}
+{% load issues %}
 
 {% block title %}问题{% endblock %}
 
@@ -30,9 +31,10 @@
         }
 
         .issues-list .issue .tags .type {
-            color: red;
+            color: white;
             padding: 1px 5px;
             border-radius: 5px;
+            background-color: #afd9ee;
         }
 
 
@@ -71,7 +73,7 @@
                         <tr>
                             <td class="number">
                                 <i class="fa fa-circle text-{{ item.priority }}"></i>
-                                <a target="_blank" href="#">{{ item.module.title }}</a>
+                                <a target="_blank" href="#">{% string_just item.id %}</a>
                             </td>
                             <td class="issue">
                                 <div>
@@ -86,8 +88,14 @@
                                         <span><i class="fa fa-hand-o-right"
                                                  aria-hidden="true"></i> {{ item.assign.username }}</span>
                                     {% endif %}
-                                    {% if item.lastest_datetime %}
+
+                                    {% if item.end_datetime %}
                                         <span><i class="fa fa-calendar"
+                                                 aria-hidden="true"></i> {{ item.end_datetime }}</span>
+                                    {% endif %}
+
+                                    {% if item.lastest_datetime %}
+                                        <span><i class="fa fa-clock-o"
                                                  aria-hidden="true"></i> {{ item.lastest_datetime }} 更新</span>
                                     {% endif %}
                                 </div>
