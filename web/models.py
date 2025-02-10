@@ -13,6 +13,9 @@ class UserInfo(models.Model):
     mobile_phone = models.CharField(verbose_name='手机号', max_length=32)
     password = models.CharField(verbose_name='密码', max_length=32)
 
+    def __str__(self):
+        return self.username
+
 
 
 
@@ -109,3 +112,81 @@ class FileRepository(models.Model):
     parent=models.ForeignKey(verbose_name='父级目录',to='self',related_name='child', null=True, blank=True, on_delete=models.CASCADE)
     update_user=models.ForeignKey(verbose_name='最近更新者', to='UserInfo',on_delete=models.CASCADE)
     update_datetime=models.DateTimeField(verbose_name='更新时间', auto_now_add=True)
+
+
+
+
+
+class Module(models.Model):
+    project=models.ForeignKey(verbose_name='项目', to='Project',on_delete=models.CASCADE)
+    title=models.CharField(verbose_name='模块名称', max_length=32)
+    def __str__(self):
+        return self.title
+
+
+
+
+
+
+class IssuesType(models.Model):
+    PROJECT_INIT_LIST=['任务','功能','Bug']
+
+    colors_choice = (
+        (1, '#FFDAB9'),
+        (2, '#98F5FF'),
+        (3, '#76EEC6'),
+        (4, '#CD5C5C'),
+        (5, '#9370DB'),
+        (6, '#FF7F00'),
+    )
+    title=models.CharField(verbose_name='类型名称', max_length=32)
+    color=models.SmallIntegerField(verbose_name='颜色', choices=colors_choice, default=1)
+    project = models.ForeignKey(verbose_name='项目', to='Project',on_delete=models.CASCADE)
+    def __str__(self):
+        return self.title
+
+
+
+
+
+
+class Issues(models.Model):
+    project = models.ForeignKey(verbose_name='项目', to='Project', on_delete=models.CASCADE)
+    issues_type=models.ForeignKey(verbose_name='问题类型', to='IssuesType', on_delete=models.CASCADE)
+    module=models.ForeignKey(verbose_name='模块', to='module', on_delete=models.CASCADE, null=True, blank=True)
+    subject=models.CharField(verbose_name='主题', max_length=80)
+    priority_choices=(
+        ('danger','高'),
+        ('warning','中'),
+        ('success','低'),
+    )
+    priority=models.CharField(verbose_name='优先级', choices=priority_choices, max_length=12,default='danger')
+    status_choices=(
+        (1,'新建'),
+        (2,'处理中'),
+        (3, '已解决'),
+        (4, '已忽略'),
+        (5, '待反馈'),
+        (6, '已关闭'),
+        (7, '重新打开'),
+    )
+    status=models.SmallIntegerField(verbose_name='状态', choices=status_choices, default=1)
+    assign=models.ForeignKey(verbose_name='指派',to='UserInfo',on_delete=models.CASCADE,related_name='task')
+    mode_choices=(
+        (1,'公开模式'),
+        (2,'隐私模式')
+    )
+    mode=models.SmallIntegerField(verbose_name='模式', choices=mode_choices, default=1)
+    desc=models.TextField(verbose_name='描述',null=True, blank=True)
+    parent=models.ForeignKey(verbose_name='父问题',to='self',related_name='child', null=True, blank=True, on_delete=models.CASCADE)
+    creator=models.ForeignKey(verbose_name='创建者', to='UserInfo',on_delete=models.CASCADE)
+    end_datetime = models.DateTimeField(verbose_name='结束时间', null=True, blank=True)
+    start_datetime = models.DateTimeField(verbose_name='开始时间', null=True, blank=True)
+    create_datetime=models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+    lastest_datetime=models.DateTimeField(verbose_name='最近更新时间',auto_now_add=True)
+    attention=models.ForeignKey(verbose_name='关注者', to='UserInfo',on_delete=models.CASCADE,null=True, blank=True,related_name='attention')
+    def __str__(self):
+        return self.subject
+
+
+

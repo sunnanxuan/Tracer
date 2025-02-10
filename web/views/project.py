@@ -35,6 +35,11 @@ def project_list(request):
         project.bucket = bucket_name
         project.save()
 
+        issues_type_object_list=[]
+        for item in models.IssuesType.PROJECT_INIT_LIST:
+            issues_type_object_list.append(models.IssuesType(project=project,title=item))
+        models.IssuesType.objects.bulk_create(issues_type_object_list)
+
         return JsonResponse({'status':True})
 
     return JsonResponse({'status':False, 'errors':form.errors})
