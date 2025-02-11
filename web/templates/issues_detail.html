@@ -41,83 +41,57 @@
             padding: 0 !important;
         }
 
-        /* 自定义宽模态框 */
-        .modal-dialog.modal-wide {
-            width: 80%;
-            max-width: 1000px;
-        }
-
-        /* 回复输入区域 */
-        #replyUser {
-            margin: 10px 0;
-            padding: 5px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-
-        #replyUser.hide {
-            display: none;
-        }
-
-        /* 回复提交错误提示 */
-        #reply-error-msg {
-            color: red;
-            margin-top: 5px;
-        }
-
-        /* 评论区容器 */
-        .comment-area {
-            min-height: 150px;
-            border: 1px solid #eee;
-            padding: 10px;
-        }
-
-        /* 每条回复项 */
-        .item {
-            border-bottom: 1px dashed #ccc;
-            padding: 5px 0;
-            margin-bottom: 5px;
-        }
-
-        .item .left-avatar {
-            float: left;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #ddd;
-            text-align: center;
-            line-height: 40px;
-            font-size: 18px;
-            margin-right: 10px;
-        }
-
-        .item .right-info {
-            overflow: hidden;
-        }
 
         .item pre {
             white-space: pre-wrap;
             margin: 0;
         }
 
-        .item .desc .msg {
-            font-size: 12px;
-            margin: 2px 0;
+
+        .comment-area .item {
+            margin-top: 20px;
         }
 
-        .item .reply {
-            font-size: 12px;
-            color: #337ab7;
+        .comment-area .left-avatar {
+            float: left;
+            margin-right: 10px;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #304659;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+        }
+
+        .comment-area .right-info {
+            padding-left: 35px;
+        }
+
+        .comment-area .right-info .desc .msg {
+            display: inline-block;
+            padding-right: 20px;
+            color: #8c8c8c;
+        }
+
+        .panel-footer .error-msg {
+            color: red;
+        }
+
+        .comment-area .child {
+            padding-left: 55px;
+        }
+
+        .panel-footer .reply-user {
+            display: inline-block;
+            color: black;
+            padding: 6px 8px;
+            margin-left: 0;
+            border-radius: 8px;
             cursor: pointer;
         }
 
-        /* 子回复区域 */
-        .child {
-            margin-left: 50px;
-            border-left: 1px dashed #ddd;
-            padding-left: 10px;
-        }
     </style>
 {% endblock %}
 
@@ -275,17 +249,23 @@
                 </div>
                 <div class="panel-footer">
                     <!-- 回复输入区域 -->
-                    <div id="replyUser" class="hide">
-                        正在回复 <span></span> &nbsp;&nbsp;（点击此处取消回复）
+                    <div id="replyUser" class="hide reply-user">
+                        to <span></span> :&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-remove" aria-hidden="true"></i>
                     </div>
                     <!-- 回复编辑器 -->
                     <div id="reply-editor-container">
                         <textarea id="reply-content" class="form-control" placeholder="请输入回复内容"
                                   style="height:150px;"></textarea>
                     </div>
-                    <button id="btnSubmit" type="button" class="btn btn-primary" style="margin-top:10px;">提交回复
-                    </button>
-                    <div id="reply-error-msg"></div>
+                    <div style="display: flex; align-items: center; width: 100%; margin-top: 10px;">
+                        <button id="btnSubmit" type="button" class="btn btn-primary" style="flex-shrink: 0;">
+                            提交回复
+                        </button>
+                        <div id="reply-error-msg" class="error-msg"
+                             style="flex-grow: 1; text-align: right; padding-left: 10px;">
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -434,37 +414,37 @@
 
         // 绑定提交回复按钮事件
         function bindSubmit() {
-    $('#btnSubmit').click(function () {
-        $('#reply-error-msg').text("");
-        // 从普通文本框获取回复内容
-        var replyContent = $('#reply-content').val();
-        var parentId = $('#replyUser').attr('data-parent-id') || "";
-        var postData = {
-            content: replyContent,
-            reply: parentId  // 后端根据此字段判断是否为回复回复
-        };
-        $.ajax({
-            url: ISSUES_RECORD_API,
-            type: 'POST',
-            data: postData,
-            dataType: 'JSON',
-            success: function (res) {
-                if (res.status) {
-                    createRecordNode(res.data);
-                    // 清空回复文本框
-                    $('#reply-content').val('');
-                    $('#replyUser').addClass('hide').removeAttr('data-parent-id').find('span').text('');
-                } else {
-                    $.each(res.error, function (k, v) {
-                        $('#reply-error-msg').text(v[0]);
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("回复提交失败：", error);
-            }
-        });
-    });
-}
+            $('#btnSubmit').click(function () {
+                $('#reply-error-msg').text("");
+                // 从普通文本框获取回复内容
+                var replyContent = $('#reply-content').val();
+                var parentId = $('#replyUser').attr('data-parent-id') || "";
+                var postData = {
+                    content: replyContent,
+                    reply: parentId  // 后端根据此字段判断是否为回复回复
+                };
+                $.ajax({
+                    url: ISSUES_RECORD_API,
+                    type: 'POST',
+                    data: postData,
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if (res.status) {
+                            createRecordNode(res.data);
+                            // 清空回复文本框
+                            $('#reply-content').val('');
+                            $('#replyUser').addClass('hide').removeAttr('data-parent-id').find('span').text('');
+                        } else {
+                            $.each(res.error, function (k, v) {
+                                $('#reply-error-msg').text(v[0]);
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("回复提交失败：", error);
+                    }
+                });
+            });
+        }
     </script>
 {% endblock %}
