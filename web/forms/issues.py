@@ -39,3 +39,9 @@ class IssueModelForm(BootStrapForm, forms.ModelForm):
         self.fields['parent'].choices = parent_list
 
 
+
+
+class IssueReplyModelForm(BootStrapForm, forms.ModelForm):
+    class Meta:
+        model=models.IssueReply
+        fields = ['content']

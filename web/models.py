@@ -190,3 +190,22 @@ class Issues(models.Model):
 
 
 
+
+
+class IssueReply(models.Model):
+
+    reply_type_choices=(
+        (1,'修改记录'),
+        (2,'回复')
+    )
+    reply_type=models.IntegerField(verbose_name='类型', choices=reply_type_choices)
+    issues=models.ForeignKey(verbose_name='问题',to='Issues',on_delete=models.CASCADE)
+    content=models.TextField(verbose_name='描述')
+    creator=models.ForeignKey(verbose_name='创建者', to='UserInfo',on_delete=models.CASCADE,related_name='create_reply')
+    create_datetime=models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+    reply=models.ForeignKey(verbose_name='回复',to='self',on_delete=models.CASCADE,null=True,blank=True)
+
+
+
+
+

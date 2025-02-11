@@ -37,7 +37,6 @@
             background-color: #afd9ee;
         }
 
-
         .pd-0 {
             padding: 0 !important;
         }
@@ -47,85 +46,88 @@
             width: 80%;
             max-width: 1000px;
         }
+
+        /* 回复输入区域 */
+        #replyUser {
+            margin: 10px 0;
+            padding: 5px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        #replyUser.hide {
+            display: none;
+        }
+
+        /* 回复提交错误提示 */
+        #reply-error-msg {
+            color: red;
+            margin-top: 5px;
+        }
+
+        /* 评论区容器 */
+        .comment-area {
+            min-height: 150px;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        /* 每条回复项 */
+        .item {
+            border-bottom: 1px dashed #ccc;
+            padding: 5px 0;
+            margin-bottom: 5px;
+        }
+
+        .item .left-avatar {
+            float: left;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+            text-align: center;
+            line-height: 40px;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .item .right-info {
+            overflow: hidden;
+        }
+
+        .item pre {
+            white-space: pre-wrap;
+            margin: 0;
+        }
+
+        .item .desc .msg {
+            font-size: 12px;
+            margin: 2px 0;
+        }
+
+        .item .reply {
+            font-size: 12px;
+            color: #337ab7;
+            cursor: pointer;
+        }
+
+        /* 子回复区域 */
+        .child {
+            margin-left: 50px;
+            border-left: 1px dashed #ddd;
+            padding-left: 10px;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="container-fluid clearfix" style="padding: 20px 0;">
-        <div class="col-sm-3">
+        <!-- 更新问题表单 -->
+        <div class="col-sm-7">
             <div class="panel panel-default">
-                <div class="panel-heading"><i class="fa fa-search" aria-hidden="true"></i> 筛选</div>
+                <div class="panel-heading"><i class="fa fa-edit" aria-hidden="true"></i> 更新问题</div>
                 <div class="panel-body">
-                    筛选
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-9">
-            <div class="panel panel-default">
-                <div class="panel-heading">Panel heading without title</div>
-                <div class="panel-body">
-                    <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#addModal">新建问题</a>
-                    <a class="btn btn-primary btn-sm">邀请成员</a>
-                </div>
-                <table class="table">
-                    <tbody class="issues-list">
-                    {% for item in issues_list %}
-                        <tr>
-                            <td class="number">
-                                <i class="fa fa-circle text-{{ item.priority }}"></i>
-                                <a target="_blank" href="{% url 'issues_detail' project_id=request.tracer.project.id issues_id=item.id %}">{% string_just item.id %}</a>
-                            </td>
-                            <td class="issue">
-                                <div>
-                                    <a target="_blank" href="{% url 'issues_detail' project_id=request.tracer.project.id issues_id=item.id %}">{{ item.subject }}</a>
-                                </div>
-                                <div class="tags">
-                                    <span class="type">{{ item.issues_type.title }}</span>
-                                    <span><i class="fa fa-refresh" aria-hidden="true"></i> {{ item.get_status_display }}</span>
-                                    <span><i class="fa fa-user-o"
-                                             aria-hidden="true"></i> {{ item.creator.username }}</span>
-                                    {% if item.assign %}
-                                        <span><i class="fa fa-hand-o-right"
-                                                 aria-hidden="true"></i> {{ item.assign.username }}</span>
-                                    {% endif %}
-
-                                    {% if item.end_datetime %}
-                                        <span><i class="fa fa-calendar"
-                                                 aria-hidden="true"></i> {{ item.end_datetime }}</span>
-                                    {% endif %}
-
-                                    {% if item.lastest_datetime %}
-                                        <span><i class="fa fa-clock-o"
-                                                 aria-hidden="true"></i> {{ item.lastest_datetime }} 更新</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <nav>
-                <ul class="pagination" style="margin-top: 0">
-                    {{ page_html|safe }}
-                </ul>
-            </nav>
-        </div>
-    </div>
-
-    <!-- 新建问题 Modal -->
-    <div class="modal fade bs-example-modal-lg" id="addModal" tabindex="-1" role="dialog"
-         aria-labelledby="myLargeModalLabel">
-        <!-- 将 bs-example-modal-lg 替换或叠加 modal-wide 类 -->
-        <div class="modal-dialog modal-wide" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="myLargeModalLabel">新建问题</h4>
-                </div>
-                <div class="modal-body" style="padding-right: 40px">
                     <form id="addForm" class="form-horizontal" method="post" action="">
                         {% csrf_token %}
                         <div class="form-group">
@@ -155,7 +157,7 @@
                                    class="col-md-2 control-label">{{ form.module.label }}</label>
                             <div class="col-md-10">
                                 <div>
-                                     {{ form.module }}
+                                    {{ form.module }}
                                 </div>
 
                                 <div class="error-msg"></div>
@@ -257,13 +259,63 @@
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-                    <!-- 若需要单独保存操作，可在此处添加按钮 -->
-                    <button id='bindAddSubmit' type="button" class="btn btn-primary">保 存</button>
+                    <button id="bindAddSubmit" type="button" class="btn btn-primary">保 存</button>
                 </div>
             </div>
+        </div>
+        <!-- 操作记录及回复区域 -->
+        <div class="col-sm-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-search" aria-hidden="true"></i> 操作记录
+                </div>
+                <div class="panel-body comment-area">
+                    <!-- 回复记录将动态加载到此容器 -->
+                </div>
+                <div class="panel-footer">
+                    <!-- 回复输入区域 -->
+                    <div id="replyUser" class="hide">
+                        正在回复 <span></span> &nbsp;&nbsp;（点击此处取消回复）
+                    </div>
+                    <!-- 回复编辑器 -->
+                    <div id="reply-editor-container">
+                        <textarea id="reply-content" class="form-control" placeholder="请输入回复内容"
+                                  style="height:150px;"></textarea>
+                    </div>
+                    <button id="btnSubmit" type="button" class="btn btn-primary" style="margin-top:10px;">提交回复
+                    </button>
+                    <div id="reply-error-msg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 回复记录模板（隐藏） -->
+    <div class="hide" id="recordTemplate">
+        <div class="item">
+            <div class="left-avatar"></div>
+            <div class="right-info">
+                <pre></pre>
+                <div class="desc">
+                    <div class="msg">
+                        <i class="fa fa-bullhorn" aria-hidden="true"></i>
+                        <span class="type"></span>
+                    </div>
+                    <div class="msg">
+                        <i class="fa fa-user-o" aria-hidden="true"></i>
+                        <span class="user"></span>
+                    </div>
+                    <div class="msg">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        <span class="date"></span>
+                    </div>
+                    <a href="javascript:void(0);" class="reply">
+                        <i class="fa fa-commenting-o" aria-hidden="true"></i> 回复
+                    </a>
+                </div>
+            </div>
+            <div class="child"></div>
         </div>
     </div>
 {% endblock %}
@@ -274,16 +326,21 @@
     <script src="{% static 'plugin/bootstrap-datepicker-1.10.0/dist/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
     <script src="{% static 'plugin/bootstrap-select-1.13.14/dist/js/bootstrap-select.min.js' %}"></script>
     <script>
-        // 定义全局变量避免重复初始化
-        var quillDesc = null;
+        // 全局变量：回复编辑器
+        var replyQuill = null;
+        // 定义后端接口 URL，注意 issues_object 在视图中已传入模板
+        var ISSUES_RECORD_API = "{% url 'issues_record' project_id=request.tracer.project.id issues_id=issues_object.id %}";
 
         $(function () {
-            initModalJS();
             initDatePicker();
-            bindAddSubmit();
+            initQuillEditor();
+            bindReply();
+            bindCancelReplyUser();
+            bindSubmit();
+            loadReplies();
         });
 
-        // 修改后的日期控件初始化函数：直接选择这两个区域下的 input 元素
+        // 初始化日期控件
         function initDatePicker() {
             $('#start_datetime input, #id_end_datetime input').datepicker({
                 format: 'yyyy-mm-dd',
@@ -293,56 +350,120 @@
             });
         }
 
-        // 将模态框相关的 JavaScript 代码封装在一个函数中
-        function initModalJS() {
-            // 当模态框完全显示时初始化 Quill 编辑器
-            $('#addModal').on('shown.bs.modal', function () {
-                if (!quillDesc) {  // 仅初始化一次
-                    quillDesc = new Quill('#editor-desc', {
-                        theme: 'snow',
-                        placeholder: '请输入描述',
-                        modules: {
-                            toolbar: [
-                                [{'header': [1, 2, false]}],
-                                ['bold', 'italic', 'underline', 'strike'],
-                                [{'list': 'ordered'}, {'list': 'bullet'}],
-                                ['link', 'image'],
-                                ['clean']
-                            ]
-                        }
-                    });
+        // 初始化回复编辑器
+        function initQuillEditor() {
+            replyQuill = new Quill('#editor-desc', {
+                theme: 'snow',
+                placeholder: '请输入回复内容',
+                modules: {
+                    toolbar: [
+                        [{'header': [1, 2, false]}],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
                 }
             });
+        }
 
-            // 表单提交时，将编辑器中的内容存入隐藏域中
-            $('#addForm').on('submit', function () {
-                $('#hiddenDesc').val(quillDesc.root.innerHTML);
+        // 从后端加载已有的回复记录
+        function loadReplies() {
+            $.ajax({
+                url: ISSUES_RECORD_API,
+                type: 'GET',
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        $.each(res.data, function (i, replyData) {
+                            createRecordNode(replyData);
+                        });
+                    }
+                }
             });
         }
 
+        // 构造并插入回复记录节点，实现分级展示
+        function createRecordNode(nodeDict) {
+            var $item = $('#recordTemplate').find('.item').clone();
+            // 设置头像为用户名首字母大写
+            $item.find('.left-avatar').html(nodeDict.creator.charAt(0).toUpperCase());
+            // 设置回复内容、用户名、类型和时间
+            $item.find('pre').html(nodeDict.content);
+            $item.find('.user').html(nodeDict.creator);
+            $item.find('.type').html(nodeDict.reply_type_text);
+            $item.find('.date').html(nodeDict.datetime);
+            // 设置一个自定义属性，方便后续查找（为避免纯数字 id 冲突，前面加上 record-）
+            $item.attr('id', 'record-' + nodeDict.id);
+            $item.attr('data-username', nodeDict.creator);
 
-        function bindAddSubmit(){
-            $('#bindAddSubmit').click(function (){
-                event.preventDefault();
-                $('#hiddenDesc').val(quillDesc.root.innerHTML);
-                $("#addForm").find('.error-msg').empty();
-                $.ajax({
-                    url:"{% url 'issues' project_id=request.tracer.project.id %}",
-                    type:'POST',
-                    data:$('#addForm').serialize(),
-                    dataType:'JSON',
-                    success:function (res){
-                        if (res.status){
-                            location.href=location.href;
-                        }else {
-                            $.each(res.error, function (k,v){
-                                $("#id_"+k).parent().next('.error-msg').text(v[0]);
-                            })
-                        }
-                    }
-                })
-            })
+            // 如果存在 parent_id，则将当前回复作为子回复插入对应回复的 .child 区域
+            if (nodeDict.parent_id) {
+                var parentSelector = '#record-' + nodeDict.parent_id;
+                if ($(parentSelector).find('.child').length === 0) {
+                    $(parentSelector).append('<div class="child"></div>');
+                }
+                $(parentSelector).find('.child').first().append($item);
+            } else {
+                // 否则直接添加到顶层评论区
+                $('.comment-area').append($item);
+            }
         }
 
+        // 绑定“回复”按钮点击事件，显示回复输入提示区域
+        function bindReply() {
+            $('.comment-area').on('click', '.reply', function (e) {
+                e.preventDefault();
+                var $item = $(this).closest('.item');
+                var parentId = $item.attr('id').replace('record-', '');
+                var username = $item.attr('data-username');
+                // 显示回复提示区域，并记录当前要回复的父回复 ID
+                $('#replyUser').removeClass('hide').attr('data-parent-id', parentId).find('span').text(username);
+                // 聚焦回复编辑器
+                replyQuill.focus();
+            });
+        }
+
+        // 绑定取消回复事件，点击提示区域时取消回复状态
+        function bindCancelReplyUser() {
+            $('#replyUser').click(function () {
+                $(this).addClass('hide').removeAttr('data-parent-id').find('span').text('');
+                replyQuill.setContents([]);
+            });
+        }
+
+        // 绑定提交回复按钮事件
+        function bindSubmit() {
+            $('#btnSubmit').click(function () {
+                $('#reply-error-msg').text("");
+                var replyContent = replyQuill.root.innerHTML;
+                var parentId = $('#replyUser').attr('data-parent-id') || "";
+                // 构造要提交的数据
+                var postData = {
+                    content: replyContent,
+                    reply: parentId  // 后端将根据此字段判断是否为回复回复
+                };
+                $.ajax({
+                    url: ISSUES_RECORD_API,
+                    type: 'POST',
+                    data: postData,
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if (res.status) {
+                            createRecordNode(res.data);
+                            replyQuill.setContents([]);
+                            $('#replyUser').addClass('hide').removeAttr('data-parent-id').find('span').text('');
+                        } else {
+                            $.each(res.error, function (k, v) {
+                                $('#reply-error-msg').text(v[0]);
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("回复提交失败：", error);
+                    }
+                });
+            });
+        }
     </script>
 {% endblock %}

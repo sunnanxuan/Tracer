@@ -2,8 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from web import models
 from web.forms.file import FolderModelForm
-from utils.AWS_S3.S3_bucket import upload_file_to_s3, delete_file_from_s3, delete_file_list_from_s3, \
-    get_temporary_credentials
+from utils.AWS_S3.S3_bucket import delete_file_from_s3, delete_file_list_from_s3, get_temporary_credentials
 from urllib.parse import quote
 from django.utils import timezone
 from django.conf import settings

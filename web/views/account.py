@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect,HttpResponse
 from django.http import JsonResponse
 from web.forms.account import RegisterModelForm, SendSmsForm, LoginSmsForm, LoginForm
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from web import models
 import uuid

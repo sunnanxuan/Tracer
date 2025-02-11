@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, HttpResponse
-from django.http import JsonResponse
 from django.conf import settings
 import boto3
 from botocore.exceptions import ClientError
 from web import models
 from utils.AWS_S3.S3_bucket import get_temporary_credentials  # 获取临时凭证的函数
-from web.templatetags.project import register
+
 
 
 def setting(request, project_id):
