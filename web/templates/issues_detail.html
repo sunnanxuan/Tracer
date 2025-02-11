@@ -434,36 +434,37 @@
 
         // 绑定提交回复按钮事件
         function bindSubmit() {
-            $('#btnSubmit').click(function () {
-                $('#reply-error-msg').text("");
-                var replyContent = replyQuill.root.innerHTML;
-                var parentId = $('#replyUser').attr('data-parent-id') || "";
-                // 构造要提交的数据
-                var postData = {
-                    content: replyContent,
-                    reply: parentId  // 后端将根据此字段判断是否为回复回复
-                };
-                $.ajax({
-                    url: ISSUES_RECORD_API,
-                    type: 'POST',
-                    data: postData,
-                    dataType: 'JSON',
-                    success: function (res) {
-                        if (res.status) {
-                            createRecordNode(res.data);
-                            replyQuill.setContents([]);
-                            $('#replyUser').addClass('hide').removeAttr('data-parent-id').find('span').text('');
-                        } else {
-                            $.each(res.error, function (k, v) {
-                                $('#reply-error-msg').text(v[0]);
-                            });
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("回复提交失败：", error);
-                    }
-                });
-            });
-        }
+    $('#btnSubmit').click(function () {
+        $('#reply-error-msg').text("");
+        // 从普通文本框获取回复内容
+        var replyContent = $('#reply-content').val();
+        var parentId = $('#replyUser').attr('data-parent-id') || "";
+        var postData = {
+            content: replyContent,
+            reply: parentId  // 后端根据此字段判断是否为回复回复
+        };
+        $.ajax({
+            url: ISSUES_RECORD_API,
+            type: 'POST',
+            data: postData,
+            dataType: 'JSON',
+            success: function (res) {
+                if (res.status) {
+                    createRecordNode(res.data);
+                    // 清空回复文本框
+                    $('#reply-content').val('');
+                    $('#replyUser').addClass('hide').removeAttr('data-parent-id').find('span').text('');
+                } else {
+                    $.each(res.error, function (k, v) {
+                        $('#reply-error-msg').text(v[0]);
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("回复提交失败：", error);
+            }
+        });
+    });
+}
     </script>
 {% endblock %}
