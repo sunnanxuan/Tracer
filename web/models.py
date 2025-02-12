@@ -184,7 +184,7 @@ class Issues(models.Model):
     start_datetime = models.DateTimeField(verbose_name='开始时间', null=True, blank=True)
     create_datetime=models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
     lastest_datetime=models.DateTimeField(verbose_name='最近更新时间',auto_now_add=True)
-    attention=models.ForeignKey(verbose_name='关注者', to='UserInfo',on_delete=models.CASCADE,null=True, blank=True,related_name='attention')
+    attention=models.ManyToManyField(verbose_name='关注者', to='UserInfo',blank=True,related_name='attention')
     def __str__(self):
         return self.subject
 
