@@ -47,6 +47,32 @@
             width: 80%;
             max-width: 1000px;
         }
+
+
+        .filter-area .item{
+            margin-bottom: 15px;
+        }
+        .filter-area .item .title{
+            padding: 5px 0;
+        }
+        .filter-area .item .check-list a{
+            text-decoration: none;
+            display: inline-block;
+            min-width: 65px;
+        }
+        .filter-area .item .check-list label{
+            font-weight: 200;
+            font-size: 13px;
+            margin-left: 3px;
+        }
+        .filter-area .item .check-list a:hover{
+            font-weight: 300;
+        }
+        .filter-area .item .check-list .cell{
+            margin-right: 10px;
+        }
+
+
     </style>
 {% endblock %}
 
@@ -55,8 +81,24 @@
         <div class="col-sm-3">
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-search" aria-hidden="true"></i> 筛选</div>
-                <div class="panel-body">
-                    筛选
+                <div class="panel-body filter-area">
+                    <div class="item">
+                        <div class="title">状态</div>
+                        <div class="check-list">
+                            {% for item in status_filter %}
+                                {{ item }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                <div class="item">
+                        <div class="title">优先级</div>
+                        <div class="check-list">
+                            {% for item in priority_filter %}
+                                {{ item }}
+                            {% endfor %}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -281,6 +323,7 @@
             initModalJS();
             initDatePicker();
             bindAddSubmit();
+            bindClickCheckFilter();
         });
 
         // 修改后的日期控件初始化函数：直接选择这两个区域下的 input 元素
@@ -343,6 +386,15 @@
                 })
             })
         }
+
+
+        function bindClickCheckFilter(){
+            $('.filter-area').find(':checkbox').click(function (){
+                location.href=$(this).parent().attr('href');
+            });
+        }
+
+
 
     </script>
 {% endblock %}

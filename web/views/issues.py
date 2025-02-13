@@ -7,19 +7,63 @@ from web import models
 import json
 from utils.pagination import Pagination
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.safestring import mark_safe
+
+
+
+
+class CheckFilter(object):
+    def __init__(self, name, data_list, request):
+        self.name = name
+        self.data_list = data_list
+        self.request = request
+
+    def __iter__(self):
+        for item in self.data_list:
+            key = str(item[0])
+            text = item[1]
+            ck = ""
+            # 获取当前 URL 中该筛选项的所有值
+            value_list = self.request.GET.getlist(self.name)
+            # 为了不影响原始的 value_list，这里复制一份用于生成新的 URL 参数
+            new_value_list = value_list.copy()
+            if key in value_list:
+                ck = 'checked'
+                # 如果已经选中，则移除这个 key，实现取消选中
+                new_value_list.remove(key)
+            else:
+                # 如果未选中，则添加该 key，实现选中
+                new_value_list.append(key)
+            query_dict = self.request.GET.copy()
+            query_dict._mutable = True
+            query_dict.setlist(self.name, new_value_list)
+
+            url = "{}?{}".format(self.request.path_info, query_dict.urlencode())
+            tpl = "<a class='cell' href='{url}'><input type='checkbox' {ck} /><label>{text}</label></a>"
+            html = tpl.format(ck=ck, text=text, url=url)
+            yield mark_safe(html)
+
 
 
 
 
 def issues(request, project_id):
     if request.method == 'GET':
-        queryset = models.Issues.objects.filter(project_id=project_id).order_by('-create_datetime')
+        allow_filter_name=['issues_type','status','priority']
+        condition={}
+        for name in allow_filter_name:
+            value_list=request.GET.getlist(name)
+            if not value_list:
+                continue
+            condition["{}__in".format(name)]=value_list
+
+        queryset = models.Issues.objects.filter(project_id=project_id, **condition).order_by('-create_datetime')
         page_object=Pagination(
             current_page=request.GET.get('page'),
             all_count=queryset.count(),
             base_url=request.path_info,
             query_params=request.GET,
-            per_page=1
+            per_page=3
         )
         issues_list=queryset[page_object.start:page_object.end]
         form = IssueModelForm(request)
@@ -27,6 +71,8 @@ def issues(request, project_id):
             'issues_list': issues_list,
             'form': form,
             'page_html': page_object.page_html(),
+            'status_filter':CheckFilter('status',models.Issues.status_choices,request),
+            'priority_filter': CheckFilter('priority', models.Issues.priority_choices, request),
         }
         return render(request, 'issues.html', context)
 
