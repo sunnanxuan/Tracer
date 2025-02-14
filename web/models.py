@@ -209,3 +209,24 @@ class IssueReply(models.Model):
 
 
 
+
+class ProjectInvite(models.Model):
+    project = models.ForeignKey(verbose_name='项目', to='Project', on_delete=models.CASCADE)
+    code=models.CharField(verbose_name='邀请码', max_length=64, unique=True)
+    count=models.PositiveIntegerField(verbose_name='限制数量',null=True,blank=True,help_text='空表示无限制数量')
+    use_count=models.PositiveIntegerField(verbose_name='已邀请数量',default=0)
+    period_choices=(
+        (30,'30分钟'),
+        (60,'1小时'),
+        (300,'5小时'),
+        (1440,'24小时'),
+    )
+    period=models.IntegerField(verbose_name='有效期', choices=period_choices, default=1440)
+    creator = models.ForeignKey(verbose_name='创建者', to='UserInfo', on_delete=models.CASCADE, related_name='invite')
+    create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+
+
+
+
+
+

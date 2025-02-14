@@ -1,13 +1,20 @@
 from dataclasses import field
+from os.path import exists
 
+from PIL.ImagePalette import random
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse
-from web.forms.issues import IssueModelForm, IssueReplyModelForm
+from web.forms.issues import IssueModelForm, IssueReplyModelForm,InviteModelForm
 from web import models
 import json
 from utils.pagination import Pagination
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.safestring import mark_safe
+from django.urls import reverse
+from datetime import datetime, timedelta
+from django.utils import timezone
+from utils.uid import uid
+
 
 
 
@@ -60,26 +67,29 @@ class SelectFilter(object):
             key = str(item[0])
             text = item[1]
 
-            selected=""
-            value_list = self.request.GET.getlist(self.name)
-            if key in value_list:
+            selected = ""
+            # 每次都复制一份 GET 参数列表，避免修改原始列表
+            orig_value_list = self.request.GET.getlist(self.name)
+            new_value_list = orig_value_list.copy()
+            if key in orig_value_list:
                 selected = 'selected'
-                value_list.remove(key)
+                new_value_list.remove(key)
             else:
-                value_list.append(key)
+                new_value_list.append(key)
             query_dict = self.request.GET.copy()
             query_dict._mutable = True
-            query_dict.setlist(self.name, value_list)
+            query_dict.setlist(self.name, new_value_list)
             if 'page' in query_dict:
                 query_dict.pop('page')
-            param_url=query_dict.urlencode()
+            param_url = query_dict.urlencode()
             if param_url:
                 url = "{}?{}".format(self.request.path_info, param_url)
             else:
-                url=self.request.path_info
+                url = self.request.path_info
             html = "<option value='{url}' {selected} >{text}</option>".format(url=url, text=text, selected=selected)
             yield mark_safe(html)
         yield mark_safe('</select>')
+
 
 
 
@@ -109,10 +119,12 @@ def issues(request, project_id):
         project_total_user=[(request.tracer.project.creator_id, request.tracer.project.creator.username,)]
         join_user=models.ProjectUser.objects.filter(project_id=project_id).values_list('user_id','user__username')
         project_total_user.extend(join_user)
+        invite_form=InviteModelForm()
         context = {
             'issues_list': issues_list,
             'form': form,
             'page_html': page_object.page_html(),
+            'invite_form': invite_form,
             'filter_list':[
                 {'title':'问题类型', 'filter':CheckFilter('issues_type',project_issues_ytpe,request)},
                 {'title': '状态', 'filter': CheckFilter('status', models.Issues.status_choices, request)},
@@ -302,6 +314,64 @@ def issues_change(request, project_id, issues_id):
             issues_object.save()
             change_record = '{}更新为{}'.format(field_object.verbose_name, ",".join(username_list))
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
+
+
+
+
+
+
+def invite_url(request,project_id):
+    form=InviteModelForm(data=request.POST)
+    if form.is_valid():
+        if request.tracer.user != request.tracer.project.creator:
+            form.add_error('period','无权创建邀请码')
+            return JsonResponse({'status': False,'error':form.errors})
+
+        random_invite_code=uid(request.tracer.user.mobile_phone)
+        form.instance.project=request.tracer.project
+        form.instance.code=random_invite_code
+        form.instance.creator=request.tracer.user
+        form.save()
+
+        url = "{scheme}://{host}/{path}".format(
+            scheme=request.scheme,
+            host=request.get_host(),
+            path=reverse('invite_join', kwargs={'code': random_invite_code}),
+        )
+
+        return JsonResponse({'status': True, 'data': url})
+    return JsonResponse({'status': False, 'error': form.errors})
+
+
+def invite_join(request, code):
+    invite_object = models.ProjectInvite.objects.filter(code=code).first()
+    if not invite_object:
+        return render(request, 'invite_join.html', {'error': '邀请码不存在'})
+    if invite_object.project.creator == request.tracer.user:
+        return render(request, 'invite_join.html', {'error': '创建者无需再加入项目'})
+    exists = models.ProjectUser.objects.filter(project=invite_object.project, user=request.tracer.user).exists()
+    if exists:
+        return render(request, 'invite_join.html', {'error': '已加入项目无需再加入项目'})
+
+    print(request.tracer.price_policy)
+    max_member = request.tracer.price_policy.project_member
+    current_member = models.ProjectUser.objects.filter(project=invite_object.project).count()
+    current_member = current_member + 1
+    if current_member > max_member:
+        return render(request, 'invite_join.html', {'error': '项目成员超限，请升级套餐'})
+
+    current_datetime = timezone.now()
+    limit_datetime = invite_object.create_datetime + timedelta(minutes=invite_object.period)
+    if current_datetime > limit_datetime:
+        return render(request, 'invite_join.html', {'error': '邀请码已过期'})
+
+    if invite_object.count:
+        if invite_object.use_count >= invite_object.count:
+            return render(request, 'invite_join.html', {'error': '邀请码数据已使用完'})
+    invite_object.use_count += 1
+    invite_object.save()
+    models.ProjectUser.objects.create(user=request.tracer.user, project=invite_object.project)
+    return render(request, 'invite_join.html', {'project': invite_object.project})
 
 
 

@@ -106,7 +106,7 @@
                 <div class="panel-heading">Panel heading without title</div>
                 <div class="panel-body">
                     <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#addModal">新建问题</a>
-                    <a class="btn btn-primary btn-sm">邀请成员</a>
+                    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#inviteModal">邀请成员</a>
                 </div>
                 <table class="table">
                     <tbody class="issues-list">
@@ -309,6 +309,49 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade in" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">邀请成员</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="inviteForm">
+                        {% csrf_token %}
+                        {% for item in invite_form %}
+                        <div class="form-group">
+                            <label for="{{ item.id_for_label }}">{{ item.label }}</label>
+                            <span>{% if item.help_text %}({{ item.help_text }}){% endif %}</span>
+                        {{ item }}
+                        <span class="error-msg"></span>
+                        </div>
+                        {% endfor %}
+                    <button type="button" class="btn btn-success" id="btnGenInviteCode">生成邀请码</button>
+                    </form>
+                <div id="inviteArea" class="hide">
+                    <hr/>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-btn">
+                                <input type="button" value="邀请链接" class="btn btn-default">
+                            </div>
+                            <input type="text" class="form-control" id="inviteUrl">
+                            <div class="input-group-btn">
+                                <input type="button" value="复制链接" class="btn btn-primary" id="btnCopyUrl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}
 
 {% block js %}
@@ -321,12 +364,15 @@
     <script>
         // 定义全局变量避免重复初始化
         var quillDesc = null;
+        var INVITE_URL = "{% url 'invite_url' project_id=request.tracer.project.id %}"
 
         $(function () {
             initModalJS();
             initDatePicker();
             bindAddSubmit();
             bindClickCheckFilter();
+            bindCreateInviteCode();
+            bindCopyUrl();
             initSelect2();
         });
 
@@ -335,7 +381,7 @@
             $('.select2').select2({}).on('select2:select', function (e) {
                 location.href = e.params.data.id;
             }).on('select2:unselect', function (e) {
-                location.href = r.params.data.id;
+                location.href = e.params.data.id;
             });
         }
 
@@ -407,6 +453,45 @@
                 location.href = $(this).parent().attr('href');
             });
         }
+
+
+
+
+        function bindCopyUrl(){
+            $('#btnCopyUrl').click(function (){
+                var textInput=$('#inviteUrl')[0];
+                textInput.select();
+
+                document.execCommand("Copy");
+                alert('复制成功');
+            })
+        }
+
+
+
+
+
+        function bindCreateInviteCode(){
+            $('#btnGenInviteCode').click(function (){
+                $('.error-msg').empty();
+                $.ajax({
+                    url: INVITE_URL,
+                    type: 'POST',
+                    data: $('#inviteForm').serialize(),
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if (res.status) {
+                            $('#inviteArea').removeClass('hide').find('#inviteUrl').val(res.data);
+                        } else {
+                            $.each(res.error, function (k, v) {
+                                $("#id_" + k).next('.error-msg').text(v[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
 
 
     </script>

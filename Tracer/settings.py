@@ -147,6 +147,7 @@ AWS_DEFAULT_REGION = '#'
 WHITE_REGEX_URL_LIST = [
     "/register/",
     "/login/",
+    "/logout/",
     "/login/sms/",
     "/send/sms/",
     "/image/code/",

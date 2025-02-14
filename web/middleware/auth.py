@@ -23,9 +23,9 @@ class AuthMiddleware(MiddlewareMixin):
         request.tracer=Tracer()
 
         user_id = request.session.get('user_id',0)
+
         user_object=models.UserInfo.objects.filter(id=user_id).first()
         request.tracer.user=user_object
-
 
         if request.path_info in settings.WHITE_REGEX_URL_LIST or request.path_info.startswith('/admin/'):
             return
