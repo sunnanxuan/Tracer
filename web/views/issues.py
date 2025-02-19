@@ -344,6 +344,7 @@ def invite_url(request,project_id):
 
 
 def invite_join(request, code):
+    current_datetime = timezone.now()
     invite_object = models.ProjectInvite.objects.filter(code=code).first()
     if not invite_object:
         return render(request, 'invite_join.html', {'error': '邀请码不存在'})
@@ -353,14 +354,21 @@ def invite_join(request, code):
     if exists:
         return render(request, 'invite_join.html', {'error': '已加入项目无需再加入项目'})
 
-    print(request.tracer.price_policy)
-    max_member = request.tracer.price_policy.project_member
+    max_transaction=models.Transaction.objects.filter(user=invite_object.project.creator).order_by('-id').first()
+    if max_transaction.price_policy.category==1:
+        max_member=max_transaction.price_policy.project_member
+    else:
+        if max_transaction.end_datetime<current_datetime:
+            free_object=models.PricePolicy.objects.filter(category=1).first()
+            max_member=free_object.project_member
+        else:
+            max_member=max_transaction.price_policy.project_member
     current_member = models.ProjectUser.objects.filter(project=invite_object.project).count()
     current_member = current_member + 1
     if current_member > max_member:
         return render(request, 'invite_join.html', {'error': '项目成员超限，请升级套餐'})
 
-    current_datetime = timezone.now()
+
     limit_datetime = invite_object.create_datetime + timedelta(minutes=invite_object.period)
     if current_datetime > limit_datetime:
         return render(request, 'invite_join.html', {'error': '邀请码已过期'})
