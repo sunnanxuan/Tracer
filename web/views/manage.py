@@ -8,12 +8,6 @@ from django.shortcuts import get_object_or_404
 
 
 
-def dashboard(request,project_id):
-    project = get_object_or_404(models.Project, id=project_id)
-
-    # 使用 project 进行逻辑处理
-    return render(request, 'dashboard.html', {'project': project})
-
 
 
 

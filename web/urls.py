@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, manage, wiki, file, setting, issues
+from web.views import account, index, project, manage, wiki, file, setting, issues, dashboard
 
 
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path("project/star/<str:project_type>/<int:project_id>/", project.project_star, name='project_star'),
     path("project/unstar/<str:project_type>/<int:project_id>/", project.project_unstar, name='project_unstar'),
     path("manage/<int:project_id>/", include([
-        path("dashboard/", manage.dashboard, name='dashboard'),
+        path("dashboard/", dashboard.dashboard, name='dashboard'),
 
         path("statistics/", manage.statistics, name='statistics'),
 
