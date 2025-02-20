@@ -3,8 +3,8 @@ from django.db import models
 # Create your models here.
 
 """
-python manage.py makemigrations
-python manage.py migrate
+python statistics.py makemigrations
+python statistics.py migrate
 """
 
 class UserInfo(models.Model):
