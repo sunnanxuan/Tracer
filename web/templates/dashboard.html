@@ -66,7 +66,7 @@
                         新增问题趋势
                     </div>
                     <div class="panel-body">
-                        <div id="container" style="width: 100%; min-height: 200px"></div>
+                        <div id="chart" style="width: 100%; min-height: 200px"></div>
                     </div>
                 </div>
                 <div>
@@ -139,7 +139,7 @@
                             </tr>
                             <tr>
                                 <td class="label-left">项目空间：</td>
-                                <td>{{ request.tracer.project.use_space }}/{{ request.tracer.price_policy.project_space }} GB</td>
+                                <td>{% user_space request.tracer.project.use_space %}/{{ request.tracer.price_policy.project_space }} GB</td>
                             </tr>
                             </tbody>
                         </table>
@@ -184,5 +184,75 @@
 {% endblock %}
 
 {% block js %}
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <script>
+
+    var INIT_CHART="{% url 'issues_chart' project_id=request.tracer.project.id %}"
+
+    $(function (){
+        initChart();
+    })
+
+
+
+    function initChart(){
+        var config={
+            title:{
+                text:null
+            },
+            legend:{
+                enabled:false
+            },
+            credits:{
+                enabled:false
+            },
+            yAxis:{
+                title:{
+                text:'问题数量'
+                }
+            },
+            xAxis:{
+                type:'datetime',
+                tickInterval:60*60*24*1000,
+                labels:{
+                    formatter:function (){
+                        return Highcharts.dateFormat("%m-%d", this.value);
+                    },
+                    rotation:-30
+                }
+            },
+            tooltip:{
+                headerFormat:'<b>{point.key}</b><br>',
+                pointFormat:'<span style="color:{series.color}">\u25CF</span> 数量：{point.y}'
+            },
+            plotOptions:{
+                area:{
+                    stacking:'normal',
+                    lineColor:'#666666',
+                    lineWidth:1,
+                    marker:{
+                        lineWidth:1,
+                        lineColor:'#666666',
+                    }
+                }
+            },
+            series:[{
+                data:[]
+            }]
+        };
+        $.ajax({
+            url:INIT_CHART,
+            type: "GET",
+            dataType: "JSON",
+            success:function (res){
+                config.series[0].data=res.data;
+                var chart=Highcharts.chart('chart',config);
+            }
+        });
+    }
+
+
+    </script>
 
 {% endblock %}

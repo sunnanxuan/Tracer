@@ -19,6 +19,7 @@ urlpatterns = [
     path("project/unstar/<str:project_type>/<int:project_id>/", project.project_unstar, name='project_unstar'),
     path("manage/<int:project_id>/", include([
         path("dashboard/", dashboard.dashboard, name='dashboard'),
+        path("dashboard/issues/chart/", dashboard.issues_chart, name='issues_chart'),
 
         path("statistics/", manage.statistics, name='statistics'),
 
