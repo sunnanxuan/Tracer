@@ -1,10 +1,12 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 
 """
-python statistics.py makemigrations
-python statistics.py migrate
+python manage.py makemigrations
+python manage.py migrate
+
 """
 
 class UserInfo(models.Model):
@@ -224,6 +226,31 @@ class ProjectInvite(models.Model):
     period=models.IntegerField(verbose_name='有效期', choices=period_choices, default=1440)
     creator = models.ForeignKey(verbose_name='创建者', to='UserInfo', on_delete=models.CASCADE, related_name='invite')
     create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+
+
+
+
+
+
+
+
+class ChatMessage(models.Model):
+    ROLE_CHOICES = (
+        ('user', '用户'),
+        ('gpt', 'AI客服'),
+        ('person', '人工客服'),
+    )
+    # 如果你使用自定义用户模型，请确保 settings.AUTH_USER_MODEL 已正确配置
+    user = models.ForeignKey(to=UserInfo, on_delete=models.CASCADE, verbose_name="用户")
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, verbose_name="角色")
+    content = models.TextField(verbose_name="内容")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="时间")
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"{self.user} - {self.role} - {self.timestamp}"
 
 
 

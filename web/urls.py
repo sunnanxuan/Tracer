@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics
+from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat
 
 
 
@@ -56,5 +56,10 @@ urlpatterns = [
 
     ])),
     path("invite/join/<str:code>", issues.invite_join, name='invite_join'),
+
+    path('chat/', chat.chat_page, name='chat_page'),
+    # AJAX 聊天接口
+    path('chat/ai/', chat.chat_ai, name='chat_ai'),
+
 
 ]

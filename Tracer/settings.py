@@ -135,6 +135,9 @@ AUTH_TOKEN = '#'
 TWILIO_NUMBER = '#'
 
 
+OPENAI_API_KEY="#"
+
+
 
 
 ##############################

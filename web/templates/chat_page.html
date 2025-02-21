@@ -1,0 +1,172 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}在线客服 - Tracer{% endblock %}
+
+{% block css %}
+<style>
+  .chat-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+  }
+  .chat-header {
+      background: #007bff;
+      color: #fff;
+      padding: 15px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      text-align: center;
+      font-size: 1.5rem;
+  }
+  .chat-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f0f0f0;
+  }
+  .chat-message {
+      margin-bottom: 15px;
+  }
+  .chat-message.user {
+      text-align: right;
+  }
+  .chat-message.gpt {
+      text-align: left;
+  }
+  .chat-message .message-content {
+      display: inline-block;
+      padding: 10px;
+      border-radius: 4px;
+      max-width: 70%;
+  }
+  .chat-message.user .message-content {
+      background: #007bff;
+      color: #fff;
+  }
+  .chat-message.gpt .message-content {
+      background: #e9ecef;
+      color: #333;
+  }
+  .chat-input {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      display: flex;
+  }
+  .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1.4rem;
+  }
+  .chat-input button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      border: none;
+      background: #007bff;
+      color: #fff;
+      font-size: 1.4rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+  }
+  .chat-input button:hover {
+      background: #0056b3;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  <div class="chat-header">在线客服</div>
+  <div id="chat-body" class="chat-body">
+    {% for msg in messages %}
+      <div class="chat-message {{ msg.role }}">
+        <div class="message-content">
+          {% if msg.role == 'user' %}
+            <strong>您：</strong>
+          {% else %}
+            <strong>AI 客服：</strong>
+          {% endif %}
+          {{ msg.content }}
+          <br>
+          <small>{{ msg.timestamp|date:"Y-m-d H:i" }}</small>
+        </div>
+      </div>
+    {% empty %}
+      <p>暂无聊天记录，请发送消息开始对话。</p>
+    {% endfor %}
+  </div>
+  <div class="chat-input">
+    <input type="text" id="chat-input" placeholder="请输入您的问题..." required />
+    <button id="chat-send">发送</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  // 获取 CSRF token
+  var csrftoken = '{{ csrf_token }}';
+
+  // 将消息追加到聊天区域
+  function appendMessage(sender, message, timestamp) {
+      var chatBody = document.getElementById('chat-body');
+      var msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-message ' + sender;
+      var contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      if (sender === 'user') {
+          contentDiv.innerHTML = '<strong>您：</strong>' + message;
+      } else {
+          contentDiv.innerHTML = '<strong>AI 客服：</strong>' + message;
+      }
+      if (timestamp) {
+          contentDiv.innerHTML += '<br><small>' + timestamp + '</small>';
+      }
+      msgDiv.appendChild(contentDiv);
+      chatBody.appendChild(msgDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  // 发送消息的 AJAX 调用
+  function sendMessage() {
+      var input = document.getElementById('chat-input');
+      var message = input.value.trim();
+      if (!message) return;
+      appendMessage('user', message);
+      input.value = '';
+
+      fetch("{% url 'chat_ai' %}", {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+          // 如果你希望显示发送时间，可以在后端返回时间后格式化显示
+          appendMessage('gpt', data.response);
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          appendMessage('gpt', '抱歉，出现错误，请稍后重试。');
+      });
+  }
+
+  document.getElementById('chat-send').addEventListener('click', sendMessage);
+  document.getElementById('chat-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+          sendMessage();
+      }
+  });
+</script>
+{% endblock %}
