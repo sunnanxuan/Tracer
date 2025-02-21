@@ -1,0 +1,201 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}帮助文档{% endblock %}
+
+{% block css %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: auto;
+            background: #fff;
+            padding: 20px 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+            margin-top: 20px;
+        }
+        nav.toc {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        nav.toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        nav.toc li {
+            margin-bottom: 5px;
+        }
+        nav.toc a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        nav.toc a:hover {
+            text-decoration: underline;
+        }
+        section {
+            margin-bottom: 40px;
+        }
+        section p, section li {
+            font-size: 15px;
+            color: #555;
+        }
+        section ul, section ol {
+            margin-left: 20px;
+        }
+        /* 增加区块标题下划线 */
+        .section h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        /* 列表项前加图标 */
+        .section ul li::before {
+            content: "• ";
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>帮助文档</h1>
+  <nav class="toc">
+    <ul>
+      <li><a href="#overview">1. 系统简介</a></li>
+      <li><a href="#account">2. 账户管理</a></li>
+      <li><a href="#getting-started">3. 快速开始</a></li>
+      <li><a href="#project-management">4. 项目管理与列表</a></li>
+      <li><a href="#issue-tracking">5. 任务与问题</a></li>
+      <li><a href="#wiki">6. Wiki 文档</a></li>
+      <li><a href="#file-management">7. 文件管理</a></li>
+      <li><a href="#statistics">8. 统计与报告</a></li>
+      <li><a href="#faq">9. 常见问题</a></li>
+      <li><a href="#support">10. 联系支持</a></li>
+    </ul>
+  </nav>
+
+  <!-- 1. 系统简介 -->
+  <section id="overview">
+    <h2>1. 系统简介</h2>
+    <p>Tracer 是一个全功能的项目管理系统，集成了任务跟踪、问题管理、文件管理、Wiki 文档以及实时统计等模块。系统采用现代简约的设计风格，旨在为用户提供高效协同与信息透明的项目管理体验。无论是小型团队还是大型企业，都能在 Tracer 中找到适合的解决方案。</p>
+  </section>
+
+  <!-- 2. 账户管理 -->
+  <section id="account">
+    <h2>2. 账户管理</h2>
+    <p>Tracer 支持两种登录方式以及便捷的注册流程，确保用户能够快速、安全地访问系统：</p>
+    <ul>
+      <li>
+        <strong>账号密码登录：</strong>
+        在 <em>login.html</em> 页面中，用户通过输入注册时的邮箱或手机号和密码进行登录。若验证码（图形验证码）无法识别，可点击图片进行更换。
+      </li>
+      <li>
+        <strong>短信登录：</strong>
+        在 <em>login_sms.html</em> 页面中，用户输入手机号后点击“点击获取验证码”，系统会通过短信发送验证码。输入验证码后点击“登录”即可。若短信未收到，请检查手机号是否正确，并重试。
+      </li>
+      <li>
+        <strong>用户注册：</strong>
+        在 <em>register.html</em> 页面中，用户需填写基本信息（用户名、邮箱、手机号、密码等）并通过短信验证码验证身份。注册成功后，系统会自动为新用户分配免费套餐，让您可以立即体验 Tracer 的全部功能。
+      </li>
+    </ul>
+  </section>
+
+  <!-- 3. 快速开始 -->
+  <section id="getting-started">
+    <h2>3. 快速开始</h2>
+    <p>以下是您开始使用 Tracer 的简单步骤：</p>
+    <ol>
+      <li><strong>注册账号：</strong>在注册页面填写所需信息，并通过短信验证码验证身份。</li>
+      <li><strong>登录系统：</strong>选择合适的登录方式（账号密码或短信登录）进入系统。</li>
+      <li><strong>创建项目：</strong>进入项目管理页面，点击“新建项目”按钮，根据提示填写项目名称、描述和其他基本信息。</li>
+      <li><strong>邀请成员：</strong>通过系统生成的邀请码邀请团队成员加入项目，共同协作。</li>
+    </ol>
+  </section>
+
+  <!-- 4. 项目管理与列表 -->
+  <section id="project-management">
+    <h2>4. 项目管理与列表</h2>
+    <p>在项目管理模块中，您可以：</p>
+    <ul>
+      <li><strong>查看项目列表：</strong>项目列表页面按“星标”、“我创建的”和“我参与的”分类显示项目，方便用户快速定位和管理项目。</li>
+      <li><strong>项目详情：</strong>点击项目名称进入项目仪表盘，查看详细信息、任务统计、项目动态以及文件使用情况。</li>
+      <li><strong>项目操作：</strong>支持项目的新增、编辑和删除操作。您可以点击星形图标标记关注项目，以便于快速访问。</li>
+    </ul>
+  </section>
+
+  <!-- 5. 任务与问题 -->
+  <section id="issue-tracking">
+    <h2>5. 任务与问题</h2>
+    <p>Tracer 的任务与问题模块为团队提供了完整的工作流管理：</p>
+    <ul>
+      <li><strong>新建任务或问题：</strong>通过弹出模态框添加任务或问题，设置类型、优先级、截止日期及指派人员。</li>
+      <li><strong>状态更新：</strong>任务状态可在“新建”、“处理中”、“已解决”等状态间切换，便于跟踪问题进展。</li>
+      <li><strong>评论与回复：</strong>支持多级评论和回复，记录任务处理的全过程和历史修改记录，方便追溯与分析。</li>
+    </ul>
+  </section>
+
+  <!-- 6. Wiki 文档 -->
+  <section id="wiki">
+    <h2>6. Wiki 文档</h2>
+    <p>内置的 Wiki 文档功能帮助团队建立和维护知识库：</p>
+    <ul>
+      <li><strong>新建与编辑文档：</strong>点击“新建”按钮进入编辑页面，轻松创建和更新项目相关文档。</li>
+      <li><strong>自动目录生成：</strong>系统自动生成文档目录，实现文档层级管理，便于快速查找。</li>
+      <li><strong>多媒体支持：</strong>支持插入图片、视频及其他多媒体内容，使文档内容更加丰富。</li>
+    </ul>
+  </section>
+
+  <!-- 7. 文件管理 -->
+  <section id="file-management">
+    <h2>7. 文件管理</h2>
+    <p>文件管理模块提供安全高效的文件存储和管理功能：</p>
+    <ul>
+      <li><strong>文件上传与下载：</strong>支持批量上传文件，结合 AWS S3 云存储实现数据安全存储和快速访问。</li>
+      <li><strong>文件夹操作：</strong>支持创建、移动和删除文件夹，实现文件的分类存储与高效管理。</li>
+      <li><strong>空间监控：</strong>实时显示项目已使用空间与剩余空间，确保上传时不会超出限制。</li>
+    </ul>
+  </section>
+
+  <!-- 8. 统计与报告 -->
+  <section id="statistics">
+    <h2>8. 统计与报告</h2>
+    <p>通过统计模块，您可以获取项目的详细数据报告，辅助决策：</p>
+    <ul>
+      <li><strong>实时图表展示：</strong>采用饼图、柱状图和折线图展示项目进度、任务状态及新增趋势。</li>
+      <li><strong>成员工作进度：</strong>直观显示各团队成员的任务分布和工作量统计。</li>
+      <li><strong>数据导出：</strong>部分统计数据支持导出，方便进行进一步分析和报表生成。</li>
+    </ul>
+  </section>
+
+  <!-- 9. 常见问题 -->
+  <section id="faq">
+    <h2>9. 常见问题</h2>
+    <p><strong>Q1: 如何创建新项目？</strong></p>
+    <p>A: 登录后进入项目管理页面，点击“新建项目”，填写相关信息后提交即可创建。</p>
+    <p><strong>Q2: 登录时验证码总是不正确怎么办？</strong></p>
+    <p>A: 请点击验证码图片更换验证码，或尝试使用短信登录。</p>
+    <p><strong>Q3: 文件上传失败提示空间不足怎么办？</strong></p>
+    <p>A: 请检查当前项目已用空间是否超出套餐限制，必要时可升级套餐或清理无效文件。</p>
+  </section>
+
+  <!-- 10. 联系支持 -->
+  <section id="support">
+    <h2>10. 联系支持</h2>
+    <p>如果您在使用过程中遇到任何问题或有建议，请通过以下方式联系我们：</p>
+    <ul>
+      <li>邮箱: support@tracer.com</li>
+      <li>电话: 123-456-7890</li>
+      <li>在线客服: 点击页面右下角的“在线客服”按钮</li>
+    </ul>
+  </section>
+</div>
+{% endblock %}

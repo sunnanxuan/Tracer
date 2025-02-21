@@ -12,7 +12,14 @@ urlpatterns = [
     path("logout/", account.logout, name='logout'),
     path("image/code/", account.image_code, name='image_code'),
 
+
+
     path("index/", index.index, name='index'),
+    path("index/document/", index.document, name='document'),
+    path("index/information/", index.information, name='information'),
+    path("index/price/policy/", index.price_policy, name='price_policy'),
+
+
 
     path("project/list/", project.project_list, name='project_list'),
     path("project/star/<str:project_type>/<int:project_id>/", project.project_star, name='project_star'),

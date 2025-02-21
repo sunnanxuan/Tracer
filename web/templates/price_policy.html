@@ -1,0 +1,165 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}价格策略 - Tracer{% endblock %}
+
+{% block css %}
+<style>
+  /* Hero 区域 */
+  .hero {
+      background: url('https://source.unsplash.com/1200x300/?pricing,strategy') no-repeat center center/cover;
+      position: relative;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 2.5rem;
+      font-weight: bold;
+  }
+  .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+  }
+  .hero .hero-content {
+      position: relative;
+      z-index: 2;
+  }
+  /* 定价卡片容器 */
+  .pricing-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+  }
+  /* 定价卡片 */
+  .pricing-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin: 15px;
+      padding: 20px;
+      flex: 0 0 300px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .pricing-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+  .pricing-card h3 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      color: #007bff;
+  }
+  .pricing-card .price {
+      font-size: 2rem;
+      margin: 10px 0;
+      color: #ff5722;
+  }
+  .pricing-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+      text-align: left;
+  }
+  .pricing-card ul li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f1f1;
+  }
+  .pricing-card ul li:last-child {
+      border-bottom: none;
+  }
+  .pricing-card .cta-button {
+      display: inline-block;
+      background: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: background 0.3s;
+  }
+  .pricing-card .cta-button:hover {
+      background: #0056b3;
+  }
+  /* Call To Action 区域 */
+  .cta-section {
+      background: linear-gradient(135deg, #f0f4f8, #e0ebf0);
+      padding: 40px 0;
+      text-align: center;
+      margin-top: 40px;
+  }
+  .cta-section h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #333;
+  }
+  .cta-section p {
+      font-size: 1.1rem;
+      color: #555;
+  }
+  .cta-section a {
+      display: inline-block;
+      background: #28a745;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      transition: background 0.3s;
+  }
+  .cta-section a:hover {
+      background: #218838;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero 区域 -->
+<div class="hero">
+  <div class="hero-content">
+    价格策略
+  </div>
+</div>
+
+<!-- 定价卡片展示 -->
+<div class="pricing-container">
+  {% for policy in policies %}
+  <div class="pricing-card">
+    <h3>{{ policy.title }}</h3>
+    {% if policy.category == 1 %}
+      <p class="price">免费</p>
+    {% else %}
+      <p class="price">¥{{ policy.price }} / 年</p>
+    {% endif %}
+    <ul>
+      <li>项目数：{{ policy.project_num }}</li>
+      <li>成员数：{{ policy.project_member }}</li>
+      <li>单项目空间：{{ policy.project_space }} MB</li>
+      <li>单文件大小：{{ policy.project_file_size }} MB</li>
+    </ul>
+    {% if policy.category == 1 %}
+      <a href="{% url 'register' %}" class="cta-button">立即注册</a>
+    {% else %}
+      <a href="/pricing/purchase/{{ policy.id }}/" class="cta-button">选择套餐</a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Call To Action 区域 -->
+<div class="cta-section">
+  <h2>找不到合适的套餐？</h2>
+  <p>联系我们获取定制化解决方案，满足您团队的特殊需求。</p>
+  <a href="/contact/">联系我们</a>
+</div>
+{% endblock %}

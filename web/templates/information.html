@@ -1,0 +1,251 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}产品功能介绍 - Tracer{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+<style>
+  /* 页面整体样式 */
+  body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #333;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+  }
+    .hero {
+      background: url('https://source.unsplash.com/1200x300/?pricing,strategy') no-repeat center center/cover;
+      position: relative;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 2.5rem;
+      font-weight: bold;
+  }
+  .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+  }
+  .hero .hero-content {
+      position: relative;
+      z-index: 2;
+  }
+  .container {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 20px;
+  }
+  .section {
+      margin-bottom: 60px;
+  }
+  .section h2 {
+      margin-bottom: 20px;
+      color: #007bff;
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 600;
+  }
+  .feature-item {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #eaeaea;
+      padding-bottom: 20px;
+  }
+  .feature-icon {
+      flex: 0 0 80px;
+      height: 80px;
+      margin-right: 20px;
+      background-color: #ffd700;
+      color: #fff;
+      font-size: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+  }
+  .feature-content {
+      flex: 1;
+  }
+  .feature-content h3 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+  }
+  .feature-content p {
+      margin: 0;
+      line-height: 1.6;
+  }
+  .feature-details {
+      margin-top: 10px;
+      padding-left: 20px;
+      font-size: 1.15rem;
+      color: #555;
+  }
+  .feature-details li {
+      margin-bottom: 5px;
+  }
+  .cta {
+      text-align: center;
+      margin-top: 40px;
+  }
+  .cta a {
+      display: inline-block;
+      background-color: #007bff;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 1.2rem;
+  }
+  .cta a:hover {
+      background-color: #0056b3;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="hero">
+  <div class="hero-content">
+    产品功能
+  </div>
+</div>
+<!-- 主容器 -->
+<div class="container">
+
+  <!-- 1. 项目管理 -->
+  <section class="section" id="project-management">
+    <h2>项目管理</h2>
+    <div class="feature-item">
+      <div class="feature-icon">
+        <i class="fa fa-folder-open" aria-hidden="true"></i>
+      </div>
+      <div class="feature-content">
+        <h3>高效项目创建与管理</h3>
+        <p>通过直观的项目列表展示“我创建的”、“我参与的”以及“星标项目”，让您能够轻松创建、管理和跟踪项目。</p>
+        <ul class="feature-details">
+          <li>快速添加、修改项目基本信息</li>
+          <li>实时项目进度与数据统计</li>
+          <li>多视图模式支持灵活切换</li>
+          <li>完善的权限控制和团队协作管理</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 任务与问题管理 -->
+  <section class="section" id="issue-tracking">
+    <h2>任务与问题管理</h2>
+    <div class="feature-item">
+      <div class="feature-icon">
+        <i class="fa fa-tasks" aria-hidden="true"></i>
+      </div>
+      <div class="feature-content">
+        <h3>任务跟踪与问题处理</h3>
+        <p>支持新建任务、分配问题、设置优先级和状态，确保每个问题都有详细描述和及时反馈。</p>
+        <ul class="feature-details">
+          <li>详细任务描述和附件上传</li>
+          <li>多级评论、回复及修改记录</li>
+          <li>自定义优先级与状态的灵活管理</li>
+          <li>任务分配及自动提醒机制</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Wiki 文档管理 -->
+  <section class="section" id="wiki">
+    <h2>Wiki 文档管理</h2>
+    <div class="feature-item">
+      <div class="feature-icon">
+        <i class="fa fa-book" aria-hidden="true"></i>
+      </div>
+      <div class="feature-content">
+        <h3>构建团队知识库</h3>
+        <p>内置 Wiki 功能帮助团队构建、维护和分享项目文档，实现文档层级管理和知识共享。</p>
+        <ul class="feature-details">
+          <li>便捷的在线文档编辑器</li>
+          <li>自动生成目录和文档结构</li>
+          <li>支持图片、视频等多媒体内容</li>
+          <li>版本控制和历史记录追踪</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 文件管理 -->
+  <section class="section" id="file-management">
+    <h2>文件管理</h2>
+    <div class="feature-item">
+      <div class="feature-icon">
+        <i class="fa fa-file" aria-hidden="true"></i>
+      </div>
+      <div class="feature-content">
+        <h3>安全高效的文件存储</h3>
+        <p>集成 AWS S3 云存储，实现文件的上传、下载与删除，保障数据安全的同时实时监控项目空间使用情况。</p>
+        <ul class="feature-details">
+          <li>批量文件上传与管理</li>
+          <li>创建文件夹、分类存储</li>
+          <li>实时空间使用与预警机制</li>
+          <li>数据加密与备份保障</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 实时统计与报告 -->
+  <section class="section" id="statistics">
+    <h2>实时统计与报告</h2>
+    <div class="feature-item">
+      <div class="feature-icon">
+        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+      </div>
+      <div class="feature-content">
+        <h3>直观数据仪表盘</h3>
+        <p>通过多种图表形式实时展示项目进展、任务分布及成员工作量，辅助项目管理与决策。</p>
+        <ul class="feature-details">
+          <li>饼图、柱状图、折线图等多维数据展示</li>
+          <li>实时更新及动态趋势分析</li>
+          <li>关键指标详细统计</li>
+          <li>历史数据对比与预测报告</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 定价与团队协作 -->
+  <section class="section" id="pricing-collaboration">
+    <h2>定价与团队协作</h2>
+    <div class="feature-item">
+      <div class="feature-icon">
+        <i class="fa fa-money" aria-hidden="true"></i>
+      </div>
+      <div class="feature-content">
+        <h3>灵活定价与高效协作</h3>
+        <p>支持免费版与多种收费套餐，满足不同团队规模需求。通过邀请码功能，项目创建者可便捷邀请团队成员加入项目。</p>
+        <ul class="feature-details">
+          <li>多种套餐灵活选择</li>
+          <li>免费版满足小团队试用</li>
+          <li>收费套餐支持无限制项目和成员</li>
+          <li>自动提醒和实时监控功能</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA 区域 -->
+  <div class="cta">
+    <a href="/register/">立即注册，开启高效项目管理</a>
+  </div>
+
+</div>
+{% endblock %}

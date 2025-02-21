@@ -4,12 +4,16 @@
 {% block title %}用户登录{% endblock %}
 
 
+
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <!-- 引入 Animate.css 和 Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-
+        /* Hero 区域使用稍微浅一点的渐变背景 */
         .hero {
-            background: url('https://via.placeholder.com/1200x400') no-repeat center center/cover;
+            background: linear-gradient(135deg, #98a8b5, #7f8c94);
             height: 400px;
             display: flex;
             justify-content: center;
@@ -18,131 +22,182 @@
             text-align: center;
             font-size: 2.5rem;
             font-weight: bold;
+            position: relative;
         }
-        .content {
-            padding: 20px;
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
         }
-        .projects-section {
-            margin-bottom: 40px;
+        .hero .hero-content {
+            position: relative;
+            z-index: 2;
         }
-        .projects-section h2 {
-            text-align: center;
-            margin-bottom: 20px;
+        /* 通用内边距 */
+        .py-5 {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
         }
-        .project-card {
-            background-color: white;
-            margin: 15px;
-            padding: 20px;
+        /* Features Section */
+        .features h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+        .feature-card {
+            padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            width: calc(33% - 60px);
-            vertical-align: top;
-        }
-        .project-card h3 {
-            margin-bottom: 10px;
-        }
-        .project-details {
-            margin-bottom: 10px;
-            color: #555;
-        }
-        .team-section {
-            margin-bottom: 40px;
-        }
-        .team-section h2 {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: white;
             text-align: center;
-            margin-bottom: 20px;
         }
-        .team-member {
+        /* 调整色块背景（项目管理、任务与问题、Wiki 文档） */
+        .feature-card.project {
+            background-color: #7a8da0; /* 原 #6e8190 调浅 */
+        }
+        .feature-card.task {
+            background-color: #7aa77a; /* 原 #6e916e 调浅 */
+        }
+        .feature-card.wiki {
+            background-color: #ad919d; /* 原 #9e818e 调浅 */
+        }
+        /* About Section */
+        .about .about-card {
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .about-card.about {
+            background-color: #9b95aa; /* 原 #8f849c 调浅 */
+        }
+        .about-card.team {
+            background-color: #8e9b9b; /* 原 #828e8e 调浅 */
+        }
+        /* Contact Section */
+        .contact .contact-card {
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: white;
             text-align: center;
-            margin: 15px;
-            display: inline-block;
-            width: calc(33% - 60px);
         }
-        .team-member img {
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            margin-bottom: 10px;
+        .contact-card {
+            background-color: #9aaebd; /* 原 #8e9ead 调浅 */
         }
-        .team-member h3 {
-            margin-bottom: 5px;
-        }
+        /* Footer */
         footer {
             background-color: #333;
             color: white;
             text-align: center;
-            padding: 10px;
-            margin-top: 20px;
+            padding: 1rem;
+            margin-top: 2rem;
         }
     </style>
 {% endblock %}
 
 {% block content %}
+<!-- Hero Section -->
+<header class="hero d-flex align-items-center">
+  <div class="container text-center hero-content animate__animated animate__fadeInDown">
+    <h1>打造高效协作的项目管理平台</h1>
+    <p class="lead animate__animated animate__fadeInUp animate__delay-1s">
+      Tracer 为企业和团队提供一站式项目管理解决方案，实现任务分配、文件共享与实时数据分析。
+    </p>
+    <a href="/register/" class="btn btn-cta btn-warning animate__animated animate__fadeInUp animate__delay-2s">立即试用</a>
+  </div>
+</header>
 
-    <h1>{{ request.tracer }}</h1>
-
-
-    <section class="hero">
-        <div>Welcome to Your Project Management Hub</div>
-    </section>
-
-    <!-- Main Content -->
-    <div class="content">
-
-        <!-- Projects Section -->
-        <section class="projects-section">
-            <h2>Current Projects</h2>
-            <div class="project-card">
-                <h3>Project Alpha</h3>
-                <div class="project-details">
-                    <p><strong>Start Date:</strong> Jan 1, 2024</p>
-                    <p><strong>End Date:</strong> Dec 31, 2024</p>
-                    <p><strong>Progress:</strong> 60%</p>
-                </div>
-            </div>
-            <div class="project-card">
-                <h3>Project Beta</h3>
-                <div class="project-details">
-                    <p><strong>Start Date:</strong> Mar 15, 2024</p>
-                    <p><strong>End Date:</strong> Oct 30, 2024</p>
-                    <p><strong>Progress:</strong> 45%</p>
-                </div>
-            </div>
-            <div class="project-card">
-                <h3>Project Gamma</h3>
-                <div class="project-details">
-                    <p><strong>Start Date:</strong> Apr 5, 2024</p>
-                    <p><strong>End Date:</strong> Nov 15, 2024</p>
-                    <p><strong>Progress:</strong> 80%</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Team Section -->
-        <section class="team-section">
-            <h2>Meet the Team</h2>
-            <div class="team-member">
-                <img src="https://via.placeholder.com/120" alt="Team Member 1">
-                <h3>Alice Johnson</h3>
-                <p>Project Manager</p>
-            </div>
-            <div class="team-member">
-                <img src="https://via.placeholder.com/120" alt="Team Member 2">
-                <h3>Bob Smith</h3>
-                <p>Lead Developer</p>
-            </div>
-            <div class="team-member">
-                <img src="https://via.placeholder.com/120" alt="Team Member 3">
-                <h3>Charlie Brown</h3>
-                <p>UX Designer</p>
-            </div>
-        </section>
-
+<!-- Features Section -->
+<section id="features" class="features py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">核心功能</h2>
+    <div class="row align-items-center mb-5 animate__animated animate__fadeInUp">
+      <div class="col-md-6 mb-4">
+        <div class="feature-card project">
+          <i class="bi bi-kanban"></i>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <h3>项目管理</h3>
+        <p>高效创建和管理项目，多视图支持团队协作与进度追踪，让您实时掌握项目进展。</p>
+      </div>
     </div>
+    <div class="row align-items-center mb-5 animate__animated animate__fadeInUp">
+      <div class="col-md-6 order-md-2 mb-4">
+        <div class="feature-card task">
+          <i class="bi bi-card-checklist"></i>
+        </div>
+      </div>
+      <div class="col-md-6 order-md-1 mb-4">
+        <h3>任务与问题</h3>
+        <p>快速分配任务与跟踪问题，支持多级评论与反馈，确保团队协作顺畅、问题处理高效。</p>
+      </div>
+    </div>
+    <div class="row align-items-center animate__animated animate__fadeInUp">
+      <div class="col-md-6 mb-4">
+        <div class="feature-card wiki">
+          <i class="bi bi-book"></i>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <h3>Wiki 文档</h3>
+        <p>内置 Wiki 功能帮助团队构建知识库，实现文档共享与管理，记录项目知识与经验。</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <p>© 2024 Project Management. All Rights Reserved. | <a href="#" style="color: white;">Privacy Policy</a></p>
-    </footer>
+<!-- About Section -->
+<section id="about" class="about py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center animate__animated animate__fadeInUp">
+      <div class="col-md-6 mb-4">
+        <div class="about-card about">
+          <h2>关于 Tracer</h2>
+          <p>Tracer 致力于打造先进的项目管理工具，帮助企业实现高效协作与智能决策。我们的专业团队不断创新，确保产品始终满足您的业务需求。</p>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+        <div class="about-card team">
+          <h2>我们的团队</h2>
+          <p>我们拥有一支充满活力与创新精神的团队，致力于不断改进产品，为用户提供最佳体验。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">联系我们</h2>
+    <div class="row animate__animated animate__fadeInUp">
+      <div class="col-md-12">
+        <div class="contact-card">
+          <p class="lead">如有疑问或建议，欢迎通过以下方式与我们联系：</p>
+          <ul class="list-unstyled">
+            <li><i class="bi bi-envelope me-2"></i> Email: support@tracer.com</li>
+            <li><i class="bi bi-telephone me-2"></i> 电话: 123-456-7890</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer py-4">
+  <div class="container text-center">
+    <p>&copy; 2025 Tracer. All Rights Reserved.</p>
+    <p>
+      <a href="#">隐私政策</a> |
+      <a href="#">服务条款</a>
+    </p>
+  </div>
+</footer>
 {% endblock %}
