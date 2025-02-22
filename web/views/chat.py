@@ -39,8 +39,12 @@ def human_support(request):
             print(message)
             if not message:
                 return JsonResponse({'response': '请输入有效的问题内容。'}, status=400)
-            ChatMessage.objects.create(user=request.tracer.user, role='person', content=message)
-            return JsonResponse({'response': '您的请求已收到，我们的人工客服稍后将与您联系。'})
+            response='您的请求已收到，我们的人工客服稍后将与您联系。'
+            ChatMessage.objects.create(user=request.tracer.user, role='user', content=message)
+            ChatMessage.objects.create(user=request.tracer.user, role='person', content=response)
+            return JsonResponse({'response': response})
         except Exception as e:
-            return JsonResponse({'response': '出现错误，请稍后再试。'}, status=500)
+            response = '出现错误，请稍后再试。'
+            ChatMessage.objects.create(user=request.tracer.user, role='person', content=response)
+            return JsonResponse({'response': response}, status=500)
     return JsonResponse({'response': '请使用 POST 方法提交消息。'}, status=405)

@@ -36,10 +36,8 @@
   .chat-message.user {
       text-align: right;
   }
-  .chat-message.gpt {
-      text-align: left;
-  }
-  .chat-message.human {
+  .chat-message.gpt,
+  .chat-message.person {
       text-align: left;
   }
   .chat-message .message-content {
@@ -56,9 +54,15 @@
       background: #e9ecef;
       color: #333;
   }
-  .chat-message.human .message-content {
+  .chat-message.person .message-content {
       background: #ffc107;
       color: #333;
+  }
+  .chat-message small {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.8rem;
+      color: #666;
   }
   .chat-input {
       padding: 10px;
@@ -110,10 +114,10 @@
             <strong>您：</strong>
           {% elif msg.role == 'gpt' %}
             <strong>AI客服：</strong>
-          {% elif msg.role == 'human' %}
+          {% elif msg.role == 'person' %}
             <strong>人工客服：</strong>
           {% endif %}
-          {{ msg.content }}<br>
+          {{ msg.content }}
           <small>{{ msg.timestamp|date:"Y-m-d H:i" }}</small>
         </div>
       </div>
@@ -127,7 +131,7 @@
       <input type="text" id="chat-input" name="message" placeholder="请输入您的问题..." required />
       <select id="chat-type" name="chat_type">
           <option value="ai" selected>AI客服</option>
-          <option value="human">人工客服</option>
+          <option value="person">人工客服</option>
       </select>
       <button type="submit" id="chat-send">发送</button>
     </form>
@@ -140,8 +144,19 @@
   // 获取 CSRF token
   var csrftoken = '{{ csrf_token }}';
 
+  // 格式化当前时间为 "YYYY-MM-DD HH:MM" 格式
+  function getFormattedTime() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = ('0' + (now.getMonth() + 1)).slice(-2);
+      var day = ('0' + now.getDate()).slice(-2);
+      var hours = ('0' + now.getHours()).slice(-2);
+      var minutes = ('0' + now.getMinutes()).slice(-2);
+      return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+  }
+
   // 将消息追加到聊天区域
-  function appendMessage(sender, message) {
+  function appendMessage(sender, message, timestamp) {
       var chatBody = document.getElementById('chat-body');
       var msgDiv = document.createElement('div');
       msgDiv.className = 'chat-message ' + sender;
@@ -151,8 +166,11 @@
           contentDiv.innerHTML = '<strong>您：</strong>' + message;
       } else if (sender === 'gpt') {
           contentDiv.innerHTML = '<strong>AI客服：</strong>' + message;
-      } else if (sender === 'human') {
+      } else if (sender === 'person') {
           contentDiv.innerHTML = '<strong>人工客服：</strong>' + message;
+      }
+      if (timestamp) {
+          contentDiv.innerHTML += '<small>' + timestamp + '</small>';
       }
       msgDiv.appendChild(contentDiv);
       chatBody.appendChild(msgDiv);
@@ -164,7 +182,9 @@
       var input = document.getElementById('chat-input');
       var message = input.value.trim();
       if (!message) return;
-      appendMessage('user', message);
+      // 使用当前时间作为发送时间
+      var timestamp = getFormattedTime();
+      appendMessage('user', message, timestamp);
       input.value = '';
 
       // 根据客服类型选择请求 URL
@@ -172,7 +192,7 @@
       var url = "";
       if (chatType === "ai") {
           url = "{% url 'chat_ai' %}";
-      } else if (chatType === "human") {
+      } else if (chatType === "person") {
           url = "{% url 'human_support' %}";
       }
 
@@ -186,18 +206,21 @@
       })
       .then(response => response.json())
       .then(data => {
+          // 使用当前时间作为返回消息的时间（也可以在后端返回时间）
+          var replyTimestamp = getFormattedTime();
           if (chatType === "ai") {
-              appendMessage('gpt', data.response);
-          } else if (chatType === "human") {
-              appendMessage('human', data.response);
+              appendMessage('gpt', data.response, replyTimestamp);
+          } else if (chatType === "person") {
+              appendMessage('person', data.response, replyTimestamp);
           }
       })
       .catch(error => {
           console.error('Error:', error);
+          var errorTimestamp = getFormattedTime();
           if (chatType === "ai") {
-              appendMessage('gpt', '抱歉，出现错误，请稍后重试。');
-          } else if (chatType === "human") {
-              appendMessage('human', '抱歉，出现错误，请稍后重试。');
+              appendMessage('gpt', '抱歉，出现错误，请稍后重试。', errorTimestamp);
+          } else if (chatType === "person") {
+              appendMessage('person', '抱歉，出现错误，请稍后重试。', errorTimestamp);
           }
       });
   }

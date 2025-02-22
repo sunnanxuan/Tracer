@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat, purchase
+from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat, purchase,calendar
 
 
 
@@ -57,6 +57,8 @@ urlpatterns = [
 
     ])),
     path("invite/join/<str:code>", issues.invite_join, name='invite_join'),
+    path('calendar/', calendar.calendar_page, name='calendar_page'),
+    path('calendar/events/', calendar.calendar_events, name='calendar_events'),
 
     path('chat/', chat.chat_page, name='chat_page'),
     path('chat/ai/', chat.chat_ai, name='chat_ai'),

@@ -1,0 +1,95 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}日历 - Tracer{% endblock %}
+
+{% block css %}
+<!-- 引入 FullCalendar 样式 -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background-color: #f2f2f7;
+        margin: 0;
+        padding: 0;
+    }
+    #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 10px;
+    }
+    /* 修改 FullCalendar 的头部，使其风格更简洁 */
+    .fc-header-toolbar {
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+    }
+    .fc-toolbar-title {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: 500;
+    }
+    /* 按钮样式 */
+    .fc-button {
+        background: none;
+        border: none;
+        font-size: 1rem;
+        color: #007aff;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    .fc-button:hover {
+        background-color: rgba(0,122,255,0.1);
+    }
+    /* 事件样式 */
+    .fc-event {
+        background-color: #007aff;
+        border: none;
+        color: #fff;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    /* 简化日期单元格文字样式 */
+    .fc-col-header-cell-cushion {
+        font-weight: 500;
+        color: #333;
+    }
+    /* 去掉多余阴影和边框，使整体风格更平面 */
+    .fc-daygrid-event {
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="calendar"></div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: {
+            url: "{% url 'calendar_events' %}",
+            failure: function() {
+                alert('无法加载日历事件，请稍后重试。');
+            }
+        },
+        eventDisplay: 'block'
+    });
+    calendar.render();
+});
+</script>
+{% endblock %}
