@@ -9,13 +9,14 @@
   .hero {
       background: url('https://source.unsplash.com/1200x300/?pricing,strategy') no-repeat center center/cover;
       position: relative;
-      height: 300px;
+      height: 200px;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #fff;
       font-size: 2.5rem;
       font-weight: bold;
+      margin-top: 0;
   }
   .hero::after {
       content: "";
@@ -150,7 +151,7 @@
     {% if policy.category == 1 %}
       <a href="{% url 'register' %}" class="cta-button">立即注册</a>
     {% else %}
-      <a href="/pricing/purchase/{{ policy.id }}/" class="cta-button">选择套餐</a>
+      <a href="{% url 'purchase_policy' policy_id=policy.id %}" class="cta-button">选择套餐</a>
     {% endif %}
   </div>
   {% endfor %}

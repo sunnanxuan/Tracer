@@ -1,0 +1,51 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}支付成功 - Tracer{% endblock %}
+
+{% block css %}
+<style>
+  .success-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+  }
+  .success-container h2 {
+      color: #28a745;
+      margin-bottom: 20px;
+  }
+  .success-details {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 20px;
+  }
+  .success-container a {
+      display: inline-block;
+      background: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.3s;
+  }
+  .success-container a:hover {
+      background: #0056b3;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+  <h2>支付成功</h2>
+  <div class="success-details">
+    <p>您已成功购买套餐 <strong>{{ policy.title }}</strong>。</p>
+    <p>购买年数：{{ count }}</p>
+    <p>订单号：{{ order_id }}</p>
+  </div>
+  <a href="{% url 'project_list' %}">返回项目列表</a>
+</div>
+{% endblock %}

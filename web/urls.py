@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat
+from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat, purchase
 
 
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path("index/document/", index.document, name='document'),
     path("index/information/", index.information, name='information'),
     path("index/price/policy/", index.price_policy, name='price_policy'),
+    path('index/purchase/<int:policy_id>/', purchase.purchase_policy, name='purchase_policy'),
 
 
 

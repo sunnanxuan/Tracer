@@ -1,9 +1,9 @@
-from datetime import datetime
 
 from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 from web import models
 from django.shortcuts import redirect
+from django.utils import timezone
 
 
 
@@ -34,7 +34,7 @@ class AuthMiddleware(MiddlewareMixin):
 
         _object=models.Transaction.objects.filter(user_id=user_id, status=2).order_by('-id').first()
 
-        current_datetime=datetime.now()
+        current_datetime = timezone.now()
         if _object.end_datetime and _object.end_datetime < current_datetime:
             _object=models.Transaction.objects.filter(user=user_id, status=2, price_policy__category=1).first()
         request.tracer.price_policy=_object.price_policy

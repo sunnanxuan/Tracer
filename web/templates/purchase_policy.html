@@ -1,0 +1,84 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}购买套餐 - Tracer{% endblock %}
+
+{% block css %}
+<style>
+  .purchase-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .purchase-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #007bff;
+  }
+  .purchase-details {
+      margin-bottom: 20px;
+      font-size: 1rem;
+      color: #333;
+  }
+  .purchase-details p {
+      margin: 5px 0;
+  }
+  .purchase-form {
+      text-align: center;
+  }
+  .purchase-form label {
+      font-size: 1rem;
+  }
+  .purchase-form input[type="number"] {
+      width: 100px;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+  }
+  .purchase-form button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+  }
+  .purchase-form button:hover {
+      background: #0056b3;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="purchase-container">
+  <h2>购买套餐</h2>
+  <div class="purchase-details">
+    <p><strong>套餐名称：</strong> {{ policy.title }}</p>
+    {% if policy.category == 1 %}
+      <p><strong>价格：</strong> 免费</p>
+    {% else %}
+      <p><strong>价格：</strong> ¥{{ policy.price }} / 年</p>
+    {% endif %}
+    <p><strong>项目数：</strong> {{ policy.project_num }}</p>
+    <p><strong>成员数：</strong> {{ policy.project_member }}</p>
+    <p><strong>单项目空间：</strong> {{ policy.project_space }} MB</p>
+    <p><strong>单文件大小：</strong> {{ policy.project_file_size }} MB</p>
+  </div>
+  <div class="purchase-form">
+    <form method="POST">
+      {% csrf_token %}
+      <label for="count">购买年数（0表示无限期）：</label>
+      <input type="number" id="count" name="count" value="1" min="0" required />
+      <br>
+      <button type="submit">确认支付</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
