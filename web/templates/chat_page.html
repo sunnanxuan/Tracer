@@ -39,6 +39,9 @@
   .chat-message.gpt {
       text-align: left;
   }
+  .chat-message.human {
+      text-align: left;
+  }
   .chat-message .message-content {
       display: inline-block;
       padding: 10px;
@@ -53,10 +56,15 @@
       background: #e9ecef;
       color: #333;
   }
+  .chat-message.human .message-content {
+      background: #ffc107;
+      color: #333;
+  }
   .chat-input {
       padding: 10px;
       border-top: 1px solid #ddd;
       display: flex;
+      align-items: center;
   }
   .chat-input input {
       flex: 1;
@@ -64,6 +72,15 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 1.4rem;
+  }
+  .chat-input select {
+      margin-left: 10px;
+      padding: 10px;
+      font-size: 1.2rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fff;
+      color: #333;
   }
   .chat-input button {
       margin-left: 10px;
@@ -91,11 +108,12 @@
         <div class="message-content">
           {% if msg.role == 'user' %}
             <strong>您：</strong>
-          {% else %}
-            <strong>AI 客服：</strong>
+          {% elif msg.role == 'gpt' %}
+            <strong>AI客服：</strong>
+          {% elif msg.role == 'human' %}
+            <strong>人工客服：</strong>
           {% endif %}
-          {{ msg.content }}
-          <br>
+          {{ msg.content }}<br>
           <small>{{ msg.timestamp|date:"Y-m-d H:i" }}</small>
         </div>
       </div>
@@ -104,8 +122,15 @@
     {% endfor %}
   </div>
   <div class="chat-input">
-    <input type="text" id="chat-input" placeholder="请输入您的问题..." required />
-    <button id="chat-send">发送</button>
+    <form id="chat-form">
+      {% csrf_token %}
+      <input type="text" id="chat-input" name="message" placeholder="请输入您的问题..." required />
+      <select id="chat-type" name="chat_type">
+          <option value="ai" selected>AI客服</option>
+          <option value="human">人工客服</option>
+      </select>
+      <button type="submit" id="chat-send">发送</button>
+    </form>
   </div>
 </div>
 {% endblock %}
@@ -116,7 +141,7 @@
   var csrftoken = '{{ csrf_token }}';
 
   // 将消息追加到聊天区域
-  function appendMessage(sender, message, timestamp) {
+  function appendMessage(sender, message) {
       var chatBody = document.getElementById('chat-body');
       var msgDiv = document.createElement('div');
       msgDiv.className = 'chat-message ' + sender;
@@ -124,11 +149,10 @@
       contentDiv.className = 'message-content';
       if (sender === 'user') {
           contentDiv.innerHTML = '<strong>您：</strong>' + message;
-      } else {
-          contentDiv.innerHTML = '<strong>AI 客服：</strong>' + message;
-      }
-      if (timestamp) {
-          contentDiv.innerHTML += '<br><small>' + timestamp + '</small>';
+      } else if (sender === 'gpt') {
+          contentDiv.innerHTML = '<strong>AI客服：</strong>' + message;
+      } else if (sender === 'human') {
+          contentDiv.innerHTML = '<strong>人工客服：</strong>' + message;
       }
       msgDiv.appendChild(contentDiv);
       chatBody.appendChild(msgDiv);
@@ -143,7 +167,16 @@
       appendMessage('user', message);
       input.value = '';
 
-      fetch("{% url 'chat_ai' %}", {
+      // 根据客服类型选择请求 URL
+      var chatType = document.getElementById('chat-type').value;
+      var url = "";
+      if (chatType === "ai") {
+          url = "{% url 'chat_ai' %}";
+      } else if (chatType === "human") {
+          url = "{% url 'human_support' %}";
+      }
+
+      fetch(url, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -153,18 +186,30 @@
       })
       .then(response => response.json())
       .then(data => {
-          // 如果你希望显示发送时间，可以在后端返回时间后格式化显示
-          appendMessage('gpt', data.response);
+          if (chatType === "ai") {
+              appendMessage('gpt', data.response);
+          } else if (chatType === "human") {
+              appendMessage('human', data.response);
+          }
       })
       .catch(error => {
           console.error('Error:', error);
-          appendMessage('gpt', '抱歉，出现错误，请稍后重试。');
+          if (chatType === "ai") {
+              appendMessage('gpt', '抱歉，出现错误，请稍后重试。');
+          } else if (chatType === "human") {
+              appendMessage('human', '抱歉，出现错误，请稍后重试。');
+          }
       });
   }
 
-  document.getElementById('chat-send').addEventListener('click', sendMessage);
+  document.getElementById('chat-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      sendMessage();
+  });
+
   document.getElementById('chat-input').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
+          e.preventDefault();
           sendMessage();
       }
   });

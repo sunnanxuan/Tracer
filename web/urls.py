@@ -58,8 +58,8 @@ urlpatterns = [
     path("invite/join/<str:code>", issues.invite_join, name='invite_join'),
 
     path('chat/', chat.chat_page, name='chat_page'),
-    # AJAX 聊天接口
     path('chat/ai/', chat.chat_ai, name='chat_ai'),
+    path('chat/person/', chat.human_support, name='human_support'),
 
 
 ]
