@@ -16,16 +16,16 @@ def calendar_events(request):
     events = []
     manual_events = models.CalendarEvent.objects.filter(user=request.tracer.user)
     for ev in manual_events:
-        if ev.type==1:
+        if ev.type == '1':
             events.append({
                 'title': ev.title,
-                'start': ev.time.isoformat(),
-                'color': '#007aff'
+                'start': ev.start.isoformat(),
+                'color': '#FF6A6A'
             })
         else:
             events.append({
                 'title': ev.title,
-                'start': ev.time.isoformat(),
+                'start': ev.start.isoformat(),
                 'color': '#008B8B'
             })
     return JsonResponse(events, safe=False)
@@ -39,12 +39,13 @@ def add_calendar_event(request):
     try:
         data = json.loads(request.body)
         title = data.get('title')
-        time = data.get('time')
+        start = data.get('start')
         # 保存手动添加的事件
+        print(start)
         event = models.CalendarEvent.objects.create(
-            user=request.user,
+            user=request.tracer.user,
             title=title,
-            start=time,
+            start=start,
             type=2,
         )
         return JsonResponse({'status': 'success', 'id': event.id})

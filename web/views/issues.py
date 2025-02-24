@@ -147,7 +147,7 @@ def issues(request, project_id):
                 issue=form.instance,
                 user=form.instance.assign,
                 title=form.instance.subject,
-                time=form.instance.end_datetime
+                start=form.instance.end_datetime
             )
 
         return JsonResponse({'status':True})
@@ -268,12 +268,11 @@ def issues_change(request, project_id, issues_id):
 
             if name == 'end_datetime' and issues_object.assign:
                 event_start = issues_object.end_datetime
-                # 如果 event_start 是 naive，则转换为 aware
                 if event_start and timezone.is_naive(event_start):
                     event_start = timezone.make_aware(event_start)
                 event = models.CalendarEvent.objects.filter(issue=issues_object).first()
                 if event:
-                    event.time = event_start
+                    event.start = event_start
                     event.save()
 
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
