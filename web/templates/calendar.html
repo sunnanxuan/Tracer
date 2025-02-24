@@ -59,17 +59,26 @@
 {% block js %}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
 <script>
-// 确保能获取到 CSRF token
+// 获取 CSRF token
 var csrfToken = '{{ csrf_token }}';
 
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
+        // 设置时区为美国加州
+        timeZone: 'America/Los_Angeles',
         initialView: 'dayGridMonth',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        // 如果后端返回的事件仅包含纯日期字符串，则标记为全天事件
+        eventDataTransform: function(eventData) {
+            if (typeof eventData.start === 'string' && eventData.start.length === 10) {
+                eventData.allDay = true;
+            }
+            return eventData;
         },
         // 动态加载事件数据（包括指派问题和手动添加的事件）
         events: {
@@ -82,14 +91,25 @@ document.addEventListener('DOMContentLoaded', function() {
         dateClick: function(info) {
             var title = prompt('请输入事件标题:');
             if (title) {
-                // 在日历上立即显示新事件
-                calendar.addEvent({
+                // 询问用户是否要输入具体时间，格式为 HH:mm
+                var timeInput = prompt("请输入具体时间（格式 HH:mm），留空则按全天事件处理：", "");
+                var eventObj = {
                     title: title,
-                    start: info.dateStr,
-                    allDay: true,
-                    color: '#007aff'  // 手动添加事件显示蓝色
-                });
-                // 通过 AJAX 请求保存事件到后端
+                    color: '#007aff'
+                };
+                // 如果用户输入了有效时间，则创建具体时间事件
+                if (timeInput && timeInput.match(/^\d{1,2}:\d{2}$/)) {
+                    // 组合日期和时间，生成形如 "2025-02-28T14:30" 的 ISO 格式字符串
+                    eventObj.start = info.dateStr + "T" + timeInput;
+                    eventObj.allDay = false;
+                } else {
+                    // 按全天事件处理
+                    eventObj.start = info.dateStr;
+                    eventObj.allDay = true;
+                }
+                // 在日历上立即显示新事件
+                calendar.addEvent(eventObj);
+                // 通过 AJAX 请求保存事件到后端，传递字段名 time（后端处理时转换为 start 字段），以及 allDay 参数
                 fetch("{% url 'add_calendar_event' %}", {
                     method: "POST",
                     headers: {
@@ -98,7 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({
                         title: title,
-                        start: info.dateStr
+                        time: eventObj.start,
+                        allDay: eventObj.allDay
                     })
                 })
                 .then(response => response.json())

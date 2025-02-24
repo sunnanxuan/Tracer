@@ -271,6 +271,7 @@ class CalendarEvent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     issue = models.ForeignKey(to=Issues, on_delete=models.CASCADE, null=True, blank=True)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='1')
+    allDay = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
