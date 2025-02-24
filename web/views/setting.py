@@ -4,11 +4,43 @@ import boto3
 from botocore.exceptions import ClientError
 from web import models
 from utils.AWS_S3.S3_bucket import get_temporary_credentials  # 获取临时凭证的函数
+from django.shortcuts import render, redirect, HttpResponse
+from web import models
 
+from django.shortcuts import render, redirect
+from web import models
 
 
 def setting(request, project_id):
-    return render(request, 'setting.html')
+    project = request.tracer.project  # 当前项目对象
+    if request.method == 'GET':
+        return render(request, 'setting.html', {'project': project})
+
+    if request.tracer.user!=request.tracer.project.creator:
+        return render(request, 'setting_delete.html', {'error': "只有项目创建者可以修改项目"})
+
+
+    # 判断提交的是哪一个表单，根据不同按钮名称判断
+    if 'update_name' in request.POST:
+        new_name = request.POST.get('project_name')
+        if not new_name:
+            error_name = "项目名称不能为空"
+            return render(request, 'setting.html', {'project': project, 'error_name': error_name})
+        project.name = new_name
+        project.save()
+        return redirect('setting', project_id=project.id)
+
+    elif 'update_desc' in request.POST:
+        new_desc = request.POST.get('project_desc')
+        # 允许描述为空，也可以加非空判断
+        project.desc = new_desc
+        project.save()
+        return redirect('setting', project_id=project.id)
+
+
+    # 默认返回修改页面
+    return render(request, 'setting.html', {'project': project})
+
 
 
 

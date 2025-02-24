@@ -1,7 +1,7 @@
 {% extends 'layout/manage.html' %}
 {% load static %}
 
-{% block title %}删除项目{% endblock %}
+{% block title %}修改项目{% endblock %}
 
 {% block css %}
     <style>
@@ -12,55 +12,68 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container clearfix">
-        <div class="col-sm-3">
-            <div class="panel panel-default">
-                <div class="panel-heading" style="background-color: transparent; font-weight: bold">
-                    个人中心
-                </div>
-                <div class="panel-body">
-                    <div>
-                        <a href="#" class="list-group-item">我的资料</a>
-                        <a href="#" class="list-group-item">修改密码</a>
-                        <a href="{% url 'setting_delete' project_id=request.tracer.project.id %}"
-                           class="list-group-item choose">删除项目</a>
-                    </div>
-                </div>
+<div class="container clearfix">
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="background-color: transparent; font-weight: bold">
+                项目配置
             </div>
-        </div>
-        <div class="col-sm-9">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 删除项目
-                </div>
-                <div class="panel-body">
-                    <form class="form-horizontal" method="post"
-                          action="{% url 'setting_delete' project_id=request.tracer.project.id %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">项目名</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" placeholder="请输入项目名" name="project_name">
-                                {% if error %}
-                                    <span class="error-msg text-danger">{{ error }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="col-sm-3">
-                                <input type="submit" class="btn btn-danger" value="删 除">
-                            </div>
-                        </div>
-                    </form>
-                    <div class="alert alert-warning" role="alert">
-                        <strong>警告：</strong> 此操作不可恢复，请确保输入正确的项目名称以确认删除项目。
-                    </div>
+            <div class="panel-body">
+                <div>
+                    <a href="{% url 'setting' project_id=project.id %}" class="list-group-item choose">修改项目</a>
+                    <a href="#" class="list-group-item">人员管理</a>
+                    <a href="{% url 'setting_delete' project_id=project.id %}" class="list-group-item">删除项目</a>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-sm-9">
+        <!-- 修改项目名称 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">修改项目名称</div>
+            <div class="panel-body">
+                <form class="form-horizontal" method="post" action="{% url 'setting' project_id=project.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">项目名称</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" name="project_name" value="{{ project.name }}" placeholder="请输入项目名称">
+                            {% if error_name %}
+                                <span class="error-msg text-danger">{{ error_name }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="submit" name="update_name" class="btn btn-primary">保存项目名</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- 修改项目描述 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">修改项目描述</div>
+            <div class="panel-body">
+                <form class="form-horizontal" method="post" action="{% url 'setting' project_id=project.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">项目描述</label>
+                        <div class="col-sm-7">
+                            <textarea class="form-control" name="project_desc" placeholder="请新的输入项目描述">{{ project.desc }}</textarea>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="submit" name="update_desc" class="btn btn-primary">保存描述</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
 
 {% block js %}
     <script>
-        // 如果需要，可在此处添加前端验证逻辑
+        // 可添加前端验证逻辑
     </script>
 {% endblock %}
