@@ -21,7 +21,6 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         padding: 10px;
     }
-    /* 简化 FullCalendar 头部样式 */
     .fc-header-toolbar {
         background: #fff;
         border-bottom: 1px solid #ddd;
@@ -42,13 +41,13 @@
     .fc-button:hover {
         background-color: rgba(0,122,255,0.1);
     }
-    .fc-event {
-        background-color: #ff5722; /* 使用橙色标识截止时间 */
-        border: none;
+    /* 指派问题的截止时间事件颜色 */
+    .fc-event[style*="#ff5722"] {
         color: #fff;
-        padding: 2px 4px;
-        border-radius: 4px;
-        font-size: 0.9rem;
+    }
+    /* 手动添加事件的颜色为蓝色 */
+    .fc-event[style*="#007aff"] {
+        color: #fff;
     }
 </style>
 {% endblock %}
@@ -60,6 +59,9 @@
 {% block js %}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
 <script>
+// 确保能获取到 CSRF token
+var csrfToken = '{{ csrf_token }}';
+
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -69,11 +71,46 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        // 使用动态加载事件数据
+        // 动态加载事件数据（包括指派问题和手动添加的事件）
         events: {
             url: "{% url 'calendar_events' %}",
             failure: function() {
                 alert('无法加载日历事件，请稍后重试。');
+            }
+        },
+        // 点击日期添加事件
+        dateClick: function(info) {
+            var title = prompt('请输入事件标题:');
+            if (title) {
+                // 在日历上立即显示新事件
+                calendar.addEvent({
+                    title: title,
+                    start: info.dateStr,
+                    allDay: true,
+                    color: '#007aff'  // 手动添加事件显示蓝色
+                });
+                // 通过 AJAX 请求保存事件到后端
+                fetch("{% url 'add_calendar_event' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        start: info.dateStr
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        alert("添加事件失败：" + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("添加事件失败");
+                });
             }
         },
         eventDisplay: 'block'

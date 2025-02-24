@@ -1,7 +1,11 @@
+
+import json
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from web.models import Issues
+from web import models
+from django.views.decorators.http import require_POST
+
+
 
 
 def calendar_page(request):
@@ -10,13 +14,39 @@ def calendar_page(request):
 
 def calendar_events(request):
     events = []
-    # 获取指派给当前用户且截止时间不为空的问题
-    assigned_issues = Issues.objects.filter(assign=request.tracer.user, end_datetime__isnull=False)
-    for issue in assigned_issues:
-        events.append({
-            'title': f"截止: {issue.subject}",
-            'start': issue.end_datetime.isoformat(),
-            'color': '#ff5722'
-        })
-    # 可扩展其他事件……
+    manual_events = models.CalendarEvent.objects.filter(user=request.tracer.user)
+    for ev in manual_events:
+        if ev.type==1:
+            events.append({
+                'title': ev.title,
+                'start': ev.time.isoformat(),
+                'color': '#007aff'
+            })
+        else:
+            events.append({
+                'title': ev.title,
+                'start': ev.time.isoformat(),
+                'color': '#008B8B'
+            })
     return JsonResponse(events, safe=False)
+
+
+
+
+
+@require_POST
+def add_calendar_event(request):
+    try:
+        data = json.loads(request.body)
+        title = data.get('title')
+        time = data.get('time')
+        # 保存手动添加的事件
+        event = models.CalendarEvent.objects.create(
+            user=request.user,
+            title=title,
+            start=time,
+            type=2,
+        )
+        return JsonResponse({'status': 'success', 'id': event.id})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})

@@ -257,3 +257,20 @@ class ChatMessage(models.Model):
 
 
 
+
+
+
+class CalendarEvent(models.Model):
+    TYPE_CHOICES = (
+        ('1', '问题截止'),
+        ('2', '自定义事件'),
+    )
+    user = models.ForeignKey(to=UserInfo, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    time = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    issue = models.ForeignKey(to=Issues, on_delete=models.CASCADE, null=True, blank=True)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='1')
+
+    def __str__(self):
+        return self.title

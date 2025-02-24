@@ -14,6 +14,7 @@ from django.urls import reverse
 from datetime import datetime, timedelta
 from django.utils import timezone
 from utils.uid import uid
+from django.utils.dateparse import parse_datetime
 
 
 
@@ -140,6 +141,15 @@ def issues(request, project_id):
         form.instance.project=request.tracer.project
         form.instance.creator=request.tracer.user
         form.save()
+
+        if form.instance.assign:
+            models.CalendarEvent.objects.create(
+                issue=form.instance,
+                user=form.instance.assign,
+                title=form.instance.subject,
+                time=form.instance.end_datetime
+            )
+
         return JsonResponse({'status':True})
 
     return JsonResponse({'status':False, 'error':form.errors})
@@ -233,6 +243,15 @@ def issues_change(request, project_id, issues_id):
         return new_reply_dict
 
     if name in ['subject', 'desc', 'start_datetime', 'end_datetime']:
+
+        if name in ['start_datetime', 'end_datetime'] and value:
+            dt_value = parse_datetime(value)
+            if not dt_value:
+                return JsonResponse({'status': False, 'error': '日期格式错误'})
+            if timezone.is_naive(dt_value):
+                dt_value = timezone.make_aware(dt_value)
+            value = dt_value
+
         if not value:
             if name == 'subject' and (not value or not value.strip()):
                 return JsonResponse({'status': False, 'error': '问题标题不能为空'})
@@ -246,6 +265,17 @@ def issues_change(request, project_id, issues_id):
             setattr(issues_object, name, value)
             issues_object.save()
             change_record = '{}更新为{}'.format(field_object.verbose_name, value)
+
+            if name == 'end_datetime' and issues_object.assign:
+                event_start = issues_object.end_datetime
+                # 如果 event_start 是 naive，则转换为 aware
+                if event_start and timezone.is_naive(event_start):
+                    event_start = timezone.make_aware(event_start)
+                event = models.CalendarEvent.objects.filter(issue=issues_object).first()
+                if event:
+                    event.time = event_start
+                    event.save()
+
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
 
     # 以下部分处理其他字段，保持不变
@@ -271,6 +301,11 @@ def issues_change(request, project_id, issues_id):
                 setattr(issues_object, name, instance)
                 issues_object.save()
                 change_record = '{}更新为{}'.format(field_object.verbose_name, str(instance))
+
+                event= models.CalendarEvent.objects.get_or_create(issue=issues_object)
+                event.user = instance
+                event.save()
+
             else:
                 instance = field_object.remote_field.model.objects.filter(id=value, project_id=project_id).first()
                 if not instance:
