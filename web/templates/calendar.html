@@ -1,11 +1,11 @@
-{% extends 'layout/basic.html' %}
+{% extends 'layout/manage.html' %}
 {% load static %}
 
-{% block title %}日历 - Tracer{% endblock %}
+{% block title %}日历{% endblock %}
 
 {% block css %}
 <!-- 引入 FullCalendar 样式 -->
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet">
 <style>
     body {
         font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -21,7 +21,7 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         padding: 10px;
     }
-    /* 修改 FullCalendar 的头部，使其风格更简洁 */
+    /* 简化 FullCalendar 头部样式 */
     .fc-header-toolbar {
         background: #fff;
         border-bottom: 1px solid #ddd;
@@ -31,7 +31,6 @@
         color: #333;
         font-weight: 500;
     }
-    /* 按钮样式 */
     .fc-button {
         background: none;
         border: none;
@@ -43,24 +42,13 @@
     .fc-button:hover {
         background-color: rgba(0,122,255,0.1);
     }
-    /* 事件样式 */
     .fc-event {
-        background-color: #007aff;
+        background-color: #ff5722; /* 使用橙色标识截止时间 */
         border: none;
         color: #fff;
         padding: 2px 4px;
         border-radius: 4px;
         font-size: 0.9rem;
-    }
-    /* 简化日期单元格文字样式 */
-    .fc-col-header-cell-cushion {
-        font-weight: 500;
-        color: #333;
-    }
-    /* 去掉多余阴影和边框，使整体风格更平面 */
-    .fc-daygrid-event {
-        padding: 2px 4px;
-        border-radius: 4px;
     }
 </style>
 {% endblock %}
@@ -70,7 +58,7 @@
 {% endblock %}
 
 {% block js %}
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
@@ -81,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
+        // 使用动态加载事件数据
         events: {
             url: "{% url 'calendar_events' %}",
             failure: function() {

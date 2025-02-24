@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "web.apps.WebConfig",
-    'corsheaders'
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -163,6 +164,7 @@ WHITE_REGEX_URL_LIST = [
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
 
 
 
