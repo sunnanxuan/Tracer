@@ -56,7 +56,6 @@
             <ul class="nav navbar-nav navbar-right">
                 <ul class="nav navbar-nav navbar-right">
 
-                    <li><a href="#">工作台</a></li>
                     <li><a href="{% url 'calendar_page' %}">日历</a></li>
                     <li><a href="#"><i class="fa fa-bell-o"></i></a></li>
                     <li><a href="#"><i class="fa fa-question-circle"></i></a></li>
@@ -65,13 +64,11 @@
                            aria-haspopup="true"
                            aria-expanded="false">{{ request.tracer.user.username }}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
+                            <li><a href="#">个人中心</a></li>
+                            <li role="separator" class="divider"></li>
                             <li><a href="{% url 'chat_page' %}">客服中心</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="{% url 'logout' %}">注销</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
                         </ul>
                     </li>
                 </ul>

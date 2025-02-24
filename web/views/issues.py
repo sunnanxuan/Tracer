@@ -147,7 +147,8 @@ def issues(request, project_id):
                 issue=form.instance,
                 user=form.instance.assign,
                 title=form.instance.subject,
-                start=form.instance.end_datetime
+                start=form.instance.end_datetime,
+                allDay=True
             )
 
         return JsonResponse({'status':True})
