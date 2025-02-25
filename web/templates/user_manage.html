@@ -1,0 +1,79 @@
+{% extends 'layout/manage.html' %}
+{% load static %}
+
+{% block title %}修改项目{% endblock %}
+
+{% block css %}
+    <style>
+        .choose {
+            border-left: 2px solid #ffd900 !important;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container clearfix">
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="background-color: transparent; font-weight: bold">
+                项目配置
+            </div>
+            <div class="panel-body">
+                <div>
+                    <a href="{% url 'setting' project_id=request.tracer.project.id %}" class="list-group-item">修改项目</a>
+                    <a href="{% url 'user_manage' project_id=request.tracer.project.id %}" class="list-group-item choose">人员管理</a>
+                    <a href="{% url 'setting_delete' project_id=request.tracer.project.id %}" class="list-group-item">删除项目</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-9">
+        <!-- 此处为项目人员管理区域 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                项目人员管理
+            </div>
+            <div class="panel-body">
+                <!-- 此处可以放置参与者列表等内容 -->
+            </div>
+            <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>用户名</th>
+                <th>加入时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for participant in participants %}
+            <tr>
+                <td>{{ participant.user.username }}</td>
+                <td>{{ participant.create_datetime|date:"Y-m-d H:i" }}</td>
+                <td>
+                    {% if participant.user.id != request.tracer.project.creator.id %}
+                        <a href="{% url 'user_delete' project_id=request.tracer.project.id participant_id=participant.user.id %}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('确定要删除该参与者吗？');">删除</a>
+                    {% else %}
+                        <span class="text-muted">创建者</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">暂无参与者</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

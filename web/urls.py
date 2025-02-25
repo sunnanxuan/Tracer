@@ -48,6 +48,9 @@ urlpatterns = [
 
         path("setting/", setting.setting, name='setting'),
         path("setting/delete", setting.setting_delete, name='setting_delete'),
+        path("setting/user/manage/", setting.user_manage, name='user_manage'),
+        path("setting/user/delete/<int:participant_id>/", setting.user_delete, name='user_delete'),
+
 
         path("issues/", issues.issues, name='issues'),
         path("issues/detail/<int:issues_id>", issues.issues_detail, name='issues_detail'),

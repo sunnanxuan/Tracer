@@ -20,9 +20,9 @@
             </div>
             <div class="panel-body">
                 <div>
-                    <a href="{% url 'setting' project_id=project.id %}" class="list-group-item choose">修改项目</a>
-                    <a href="#" class="list-group-item">人员管理</a>
-                    <a href="{% url 'setting_delete' project_id=project.id %}" class="list-group-item">删除项目</a>
+                    <a href="{% url 'setting' project_id=request.tracer.project.id %}" class="list-group-item choose">修改项目</a>
+                    <a href="{% url 'user_manage' project_id=request.tracer.project.id %}" class="list-group-item">人员管理</a>
+                    <a href="{% url 'setting_delete' project_id=request.tracer.project.id %}" class="list-group-item">删除项目</a>
                 </div>
             </div>
         </div>

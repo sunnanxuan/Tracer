@@ -97,3 +97,35 @@ def setting_delete(request,project_id):
     request.tracer.project.delete()
 
     return redirect('project_list')
+
+
+
+
+
+
+
+def user_manage(request, project_id):
+    participants = models.ProjectUser.objects.filter(project=request.tracer.project)
+    return render(request, 'user_manage.html', {
+        'participants': participants,
+    })
+
+
+
+def user_delete(request, project_id, participant_id):
+    project = request.tracer.project
+    # 检查当前用户是否为项目创建者
+    if request.tracer.user != project.creator:
+        return HttpResponse("只有项目创建者可以删除参与者", status=403)
+
+    # 不允许删除项目创建者
+    if int(participant_id) == project.creator.id:
+        return HttpResponse("不能删除项目创建者", status=400)
+
+    try:
+        participant = models.ProjectUser.objects.get(project=project, user_id=participant_id)
+    except models.ProjectUser.DoesNotExist:
+        return HttpResponse("参与者不存在", status=404)
+
+    participant.delete()
+    return redirect('user_manage', project_id=project.id)
