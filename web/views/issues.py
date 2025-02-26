@@ -150,6 +150,11 @@ def issues(request, project_id):
                 start=form.instance.end_datetime,
                 allDay=True
             )
+            url = "http://localhost:8000/manage/{}/issues/detail/{}".format(form.instance.project, form.instance.id)
+            models.Notification.objects.create(
+                user=form.instance.assign,
+                message="{}将问题{}委派给了您,<a href='{}'>点击链接</a>查看".format(form.instance.creator,form.instance.subject,url),
+            )
 
         return JsonResponse({'status':True})
 
@@ -243,6 +248,14 @@ def issues_change(request, project_id, issues_id):
         }
         return new_reply_dict
 
+
+    def change_notification(issues_object):
+        url = "http://localhost:8000/manage/{}/issues/detail/{}".format(issues_object.project, issues_object.id)
+        models.Notification.objects.create(
+            user=issues_object.assign,
+            message="指派给您问题{}已被修改，<a href='{}'>点击链接</a>查看".format(issues_object.subject,url)
+        )
+
     if name in ['subject', 'desc', 'start_datetime', 'end_datetime']:
 
         if name in ['start_datetime', 'end_datetime'] and value:
@@ -275,7 +288,7 @@ def issues_change(request, project_id, issues_id):
                 if event:
                     event.start = event_start
                     event.save()
-
+        change_notification(issues_object)
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
 
     # 以下部分处理其他字段，保持不变
@@ -313,6 +326,7 @@ def issues_change(request, project_id, issues_id):
                 setattr(issues_object, name, instance)
                 issues_object.save()
                 change_record = '{}更新为{}'.format(field_object.verbose_name, str(instance))
+        change_notification(issues_object)
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
 
     if name in ['priority', 'status', 'mode']:
@@ -325,6 +339,7 @@ def issues_change(request, project_id, issues_id):
         setattr(issues_object, name, value)
         issues_object.save()
         change_record = '{}更新为{}'.format(field_object.verbose_name, selected_text)
+        change_notification(issues_object)
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
 
     if name == 'attention':
@@ -348,6 +363,7 @@ def issues_change(request, project_id, issues_id):
             issues_object.attention.set(value)
             issues_object.save()
             change_record = '{}更新为{}'.format(field_object.verbose_name, ",".join(username_list))
+        change_notification(issues_object)
         return JsonResponse({'status': True, 'data': change_reply_record(change_record)})
 
 
@@ -414,6 +430,11 @@ def invite_join(request, code):
     invite_object.use_count += 1
     invite_object.save()
     models.ProjectUser.objects.create(user=request.tracer.user, project=invite_object.project)
+    url = "http://localhost:8000/manage/{}/setting/user/manage/".format(invite_object.project.id)
+    models.Notification.objects.create(
+        user=invite_object.creator,
+        message="{}已加入您的项目{}，<a href='{}'>点击链接</a>查看".format(request.tracer.user,invite_object.project.name, url)
+    )
     return render(request, 'invite_join.html', {'project': invite_object.project})
 
 

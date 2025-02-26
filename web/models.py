@@ -275,3 +275,24 @@ class CalendarEvent(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+
+
+
+
+class Notification(models.Model):
+    """
+    提示消息模型，用于保存系统提示消息
+    """
+    user = models.ForeignKey(to=UserInfo,on_delete=models.CASCADE, related_name='notifications',verbose_name='用户')
+    message = models.TextField(verbose_name='消息内容')
+    is_read = models.BooleanField(default=False, verbose_name='是否已读')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = '提示消息'
+        verbose_name_plural = '提示消息'
+

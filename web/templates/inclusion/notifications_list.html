@@ -1,0 +1,14 @@
+{% if notifications %}
+    {% for notification in notifications %}
+        <li>
+            <a href="{% url 'notification_read' notification_id=notification.id %}">
+                {% if not notification.is_read %}
+                    <span class="unread-dot"></span>
+                {% endif %}
+                {{ notification.message|slice:":5" }}...
+            </a>
+        </li>
+    {% endfor %}
+{% else %}
+    <li>没有新消息</li>
+{% endif %}

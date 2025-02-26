@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+
+
+
+
+
+
+{% if notifications %}
+    {% for notification in notifications %}
+        <li>
+            <a href="{{ notification.url }}">
+                {% if not notification.is_read %}
+                    <span class="unread-dot"></span>
+                {% endif %}
+                {{ notification.message|slice:":5" }}...
+            </a>
+        </li>
+    {% endfor %}
+{% else %}
+    <li>没有新消息</li>
+{% endif %}
+
+
+
+
+
+{% extends 'layout/manage.html' %}
+{% load static %}
+{% block title %}通知中心{% endblock %}
+
+{% block css %}
+<style>
+    /* 基础页面样式 */
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        color: #343a40;
+        text-align: center;
+    }
+    /* 通知列表 */
+    .notification-item {
+        border-bottom: 1px solid #ddd;
+    }
+    .notification-summary {
+        cursor: pointer;
+        padding: 10px;
+        position: relative;
+    }
+    .notification-summary:hover {
+        background-color: #f9f9f9;
+    }
+    .notification-detail {
+        display: none;
+        padding: 10px;
+        background-color: #f1f1f1;
+    }
+    /* 未读标识 */
+    .unread-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: red;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    .notification-time {
+        float: right;
+        color: #999;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>通知中心</h1>
+    <div class="notifications-list">
+        {% for notification in notifications %}
+            <div class="notification-item" data-id="{{ notification.id }}">
+                <div class="notification-summary">
+                    {% if not notification.is_read %}
+                        <span class="unread-indicator"></span>
+                    {% endif %}
+                    <strong>{{ notification.message|slice:":5" }}...</strong>
+                    <span class="notification-time">{{ notification.created_at|date:"Y-m-d H:i" }}</span>
+                </div>
+                <div class="notification-detail">
+                    {{ notification.message|safe }}
+                </div>
+            </div>
+        {% empty %}
+            <p>暂无通知</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/jquery-3.7.1.js' %}"></script>
+<script>
+$(document).ready(function(){
+    $('.notification-summary').click(function(){
+        var parentItem = $(this).closest('.notification-item');
+        var notificationId = parentItem.data('id');
+        var detailBox = parentItem.find('.notification-detail');
+
+        // 切换详情显示
+        detailBox.slideToggle();
+
+        // 如果该通知未读，则标记为已读（并移除红点）
+        if(parentItem.find('.unread-indicator').length > 0){
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'notification_read' 0 %}".replace('0', notificationId),
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function(response){
+                    if(response.status){
+                        parentItem.find('.unread-indicator').remove();
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'layout/manage.html' %}
+{% load static %}
+{% block title %}通知中心{% endblock %}
+
+{% block css %}
+<style>
+    /* 基础页面样式 */
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        color: #343a40;
+        text-align: center;
+    }
+    /* 通知列表 */
+    .notification-item {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+    }
+    .notification-summary {
+        cursor: pointer;
+        padding: 10px;
+        position: relative;
+    }
+    .notification-summary:hover {
+        background-color: #f9f9f9;
+    }
+    .notification-detail {
+        padding: 10px;
+        background-color: #f1f1f1;
+    }
+    /* 未读标识 */
+    .unread-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: red;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    .notification-time {
+        float: right;
+        color: #999;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="notifications-list">
+        {% for notification in notifications %}
+            <div class="notification-item" data-id="{{ notification.id }}">
+                <div class="notification-summary">
+                    {% if not notification.is_read %}
+                        <span class="unread-indicator"></span>
+                    {% endif %}
+                    <strong>{{ notification.message|slice:":5" }}...</strong>
+                    <span class="notification-time">{{ notification.created_at|date:"Y-m-d H:i" }}</span>
+                </div>
+                <div class="notification-detail" style="{% if notification.id == expanded_notification_id %}display: block;{% else %}display: none;{% endif %}">
+                    {{ notification.message|safe }}
+                </div>
+            </div>
+        {% empty %}
+            <p>暂无通知</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/jquery-3.7.1.js' %}"></script>
+<script>
+    // 如果需要在此页面内支持点击切换其他通知的展开效果，可以绑定点击事件：
+    $(document).ready(function(){
+        $('.notification-summary').click(function(){
+            var parentItem = $(this).closest('.notification-item');
+            var detailBox = parentItem.find('.notification-detail');
+            // 切换当前通知详情显示状态
+            detailBox.slideToggle();
+        });
+    });
+</script>
+{% endblock %}
