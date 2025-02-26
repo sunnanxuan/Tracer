@@ -1,0 +1,215 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}修改项目{% endblock %}
+
+{% block css %}
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* 信息区域 */
+        .profile-info {
+            margin-top: 20px;
+        }
+
+        .info-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .info-line:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            width: 100px;
+        }
+
+        .info-value {
+            flex-grow: 1;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* 修改链接 */
+        .edit-links a {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-links a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>欢迎，{{ request.tracer.user.username }}</h1>
+        <div class="profile-info">
+            <div class="info-line">
+                <span class="info-label">用户名:</span>
+            <span class="info-value">{{ request.tracer.user.username }}</span>
+            <span class="edit-links"><a href="{% url 'change_username' %}">修改用户名</a></span>
+            </div>
+            <div class="info-line">
+                <span class="info-label">邮箱:</span>
+                <span class="info-value">{{ request.tracer.user.email }}</span>
+                <span class="edit-links"><a href="{% url 'change_email' %}">修改邮箱</a></span>
+            </div>
+            <div class="info-line">
+                <form id="phoneForm" method="POST" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.name == 'code' %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <div class="row clearfix">
+                                <div class="col-md-7">
+                                    {{ field }}
+                                    <span class="error-msg"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input id='btnSms' type="button" class="btn btn-primary" value="点击获取验证码">
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <span class="error-msg"></span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="row">
+                    <div class="col-xs-3">
+                        <button id='btnSubmit' type="button" class="btn btn-primary">确定</button>
+                    </div>
+
+                </div>
+
+            </form>
+            </div>
+            <div class="info-line">
+                <span class="info-label">密码:</span>
+                <span class="info-value">********</span>
+                <span class="edit-links"><a href="{% url 'change_password' %}">修改密码</a></span>
+            </div>
+        </div>
+        <hr>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            bindClickBtnSms();
+            bindClickSubmit();
+        });
+
+        function bindClickBtnSms() {
+            $('#btnSms').click(function () {
+
+                $('.error-msg').empty();
+
+                var mobilePhone = $('#id_mobile_phone').val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: "/send/sms/",
+                    data: {
+                        'mobile_phone': mobilePhone,
+                        tpl: "change_mobile_phone",
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            sendSmsRemind();
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next('.error-msg').text(value[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
+        function sendSmsRemind() {
+            var $smsBtn = $('#btnSms');
+
+            $smsBtn.prop('disabled', true);
+
+            var time = 60;
+            var remind = setInterval(function () {
+                $smsBtn.val(time + '秒重新发送');
+                time = time - 1;
+                if (time < 1) {
+                    clearInterval(remind);
+                    $smsBtn.val('点击获取验证码').prop('disabled', false);
+                }
+            }, 1000)
+
+
+        }
+
+
+        function bindClickSubmit(){
+            $('#btnSubmit').click(function (){
+                event.preventDefault();
+
+                $('.error-msg').empty();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'change_mobile_phone' %}",
+                    data:$('#phoneForm').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.href = res.data;
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next('.error-msg').text(value[0]);
+                            })
+                        }
+                    }
+
+                })
+            })
+        }
+
+    </script>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat, purchase,calendar
+from web.views import account, index, project, statistics, wiki, file, setting, issues, dashboard,statistics,chat, purchase,calendar,users
 
 
 
@@ -63,6 +63,13 @@ urlpatterns = [
     path('calendar/', calendar.calendar_page, name='calendar_page'),
     path('calendar/events/', calendar.calendar_events, name='calendar_events'),
     path('calendar/add_event/', calendar.add_calendar_event, name='add_calendar_event'),
+
+
+    path('users/homepage/', users.homepage, name='users_homepage'),
+    path('users/username/change/', users.change_username, name='change_username'),
+    path('users/email/change/', users.change_email, name='change_email'),
+    path('users/mobile_phone/change/', users.change_mobile_phone, name='change_mobile_phone'),
+    path('users/password/change/', users.change_password, name='change_password'),
 
     path('chat/', chat.chat_page, name='chat_page'),
     path('chat/ai/', chat.chat_ai, name='chat_ai'),
