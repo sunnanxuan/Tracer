@@ -56,11 +56,32 @@
         color: #999;
         font-size: 0.9em;
     }
+    /* 分页样式 */
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .pagination li {
+        display: inline-block;
+        margin: 0 5px;
+    }
+    .pagination li a {
+        text-decoration: none;
+        color: #337ab7;
+    }
+    .pagination li.active a {
+        font-weight: bold;
+        color: #000;
+    }
+    .pagination li.disabled a {
+        color: #ccc;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
+    <h1>通知中心</h1>
     <div class="notifications-list">
         {% for notification in notifications %}
             <div class="notification-item" data-id="{{ notification.id }}">
@@ -79,20 +100,24 @@
             <p>暂无通知</p>
         {% endfor %}
     </div>
+    <div class="pagination">
+        <ul class="pagination">
+            {{ pagination_html|safe }}
+        </ul>
+    </div>
 </div>
 {% endblock %}
 
 {% block js %}
 <script src="{% static 'js/jquery-3.7.1.js' %}"></script>
 <script>
-    // 如果需要在此页面内支持点击切换其他通知的展开效果，可以绑定点击事件：
-    $(document).ready(function(){
-        $('.notification-summary').click(function(){
-            var parentItem = $(this).closest('.notification-item');
-            var detailBox = parentItem.find('.notification-detail');
-            // 切换当前通知详情显示状态
-            detailBox.slideToggle();
-        });
+$(document).ready(function(){
+    // 如果需要在页面内切换其他通知的详情显示效果，可绑定点击事件：
+    $('.notification-summary').click(function(){
+        var parentItem = $(this).closest('.notification-item');
+        var detailBox = parentItem.find('.notification-detail');
+        detailBox.slideToggle();
     });
+});
 </script>
 {% endblock %}

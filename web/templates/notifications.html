@@ -44,11 +44,32 @@
         color: #999;
         font-size: 0.9em;
     }
+    /* 分页样式 */
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .pagination li {
+        display: inline-block;
+        margin: 0 5px;
+    }
+    .pagination li a {
+        text-decoration: none;
+        color: #337ab7;
+    }
+    .pagination li.active a {
+        font-weight: bold;
+        color: #000;
+    }
+    .pagination li.disabled a {
+        color: #ccc;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
+    <h1>通知中心</h1>
     <div class="notifications-list">
         {% for notification in notifications %}
             <div class="notification-item">
@@ -63,6 +84,11 @@
         {% empty %}
             <p>暂无通知</p>
         {% endfor %}
+    </div>
+    <div class="pagination">
+        <ul class="pagination">
+            {{ pagination_html|safe }}
+        </ul>
     </div>
 </div>
 {% endblock %}
