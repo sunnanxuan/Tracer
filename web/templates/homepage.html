@@ -5,64 +5,67 @@
 
 {% block css %}
     <style>
-        /* 全局样式 */
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #e9ecef;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #333;
-            text-align: center;
-        }
-        /* 信息区域 */
-        .profile-info {
-            margin-top: 20px;
-        }
-        .info-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        .info-line:last-child {
-            border-bottom: none;
-        }
-        .info-label {
-            font-weight: 600;
-            color: #333;
-            width: 100px;
-        }
-        .info-value {
-            flex-grow: 1;
-            font-size: 1.1em;
-            color: #555;
-        }
-        /* 修改链接 */
-        .edit-links a {
-            padding: 6px 12px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-        .edit-links a:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    /* 全局样式 */
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    /* 主容器 */
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    /* 页面标题 */
+    h1 {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        color: #343a40;
+        text-align: center;
+    }
+    /* 信息区域 */
+    .profile-info {
+        margin-top: 30px;
+    }
+    /* 信息行 */
+    .info-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .info-line:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: bold;
+        color: #495057;
+        width: 120px;
+    }
+    .info-value {
+        flex-grow: 1;
+        font-size: 1.1em;
+        color: #6c757d;
+    }
+    .edit-links a {
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+    .edit-links a:hover {
+        background-color: #0056b3;
+    }
+    
+</style>
 {% endblock %}
 
 {% block content %}
