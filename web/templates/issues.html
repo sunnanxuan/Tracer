@@ -208,7 +208,7 @@
                         <div class="form-group">
                             <label for="editor-desc" class="col-md-2 control-label">{{ form.desc.label }}</label>
                             <div class="col-md-10">
-                                <div id="editor-desc">{{ form.desc.value|default_if_none:'' }}</div>
+                                <div id="editor-desc">{{ form.desc.value|default_if_none:''|safe }}</div>
                                 <input type="hidden" name="desc" id="hiddenDesc">
                                 <div class="error-msg">{{ form.desc.errors.0 }}</div>
                             </div>
